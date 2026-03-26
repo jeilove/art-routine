@@ -2,20 +2,25 @@
 
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
-import { habits, dailyData, dailyLogs } from "@/lib/db/schema"
+import { users, habits, dailyData, dailyLogs } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { Habit, DayData } from "@/lib/types"
 
 /**
  * 1. 유저의 전체 습관 목록 동기화 (Upsert)
  */
-export async function syncHabits(newHabits: Habit[]) {
+export async function syncHabits(newHabits: Habit[], routineStartDate?: string | null) {
   const session = await auth();
   if (!session?.user?.id) return { success: false };
 
   const userId = session.user.id;
 
-  // 단순화된 로직: 기존 삭제 후 다시 삽입 (또는 Upsert)
+  // 1. 유저 테이블의 startDate 업데이트
+  if (routineStartDate) {
+    await db.update(users).set({ startDate: routineStartDate }).where(eq(users.id, userId));
+  }
+
+  // 2. 습관 목록 업데이트 (기존 삭제 후 다시 삽입)
   await db.delete(habits).where(eq(habits.userId, userId));
   
   if (newHabits.length > 0) {
@@ -97,6 +102,11 @@ export async function fetchUserData() {
 
     const userId = session.user.id;
 
+    // 유저 기본 정보 (startDate 등)
+    const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+    });
+
     // 습관 목록
     const dbHabits = await db.query.habits.findMany({
         where: eq(habits.userId, userId),
@@ -112,6 +122,7 @@ export async function fetchUserData() {
     });
 
     return {
+        startDate: user?.startDate || null,
         habits: dbHabits as Habit[],
         dailyData: dbDailyData.reduce((acc, curr) => {
             acc[curr.dateStr] = {

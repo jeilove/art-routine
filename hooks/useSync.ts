@@ -27,7 +27,7 @@ export function useSync() {
         } else {
             // 서버에 데이터가 없고 로컬에 데이터가 있으면 서버로 푸시 (초기 마이그레이션)
             if (habits.length > 0) {
-                await syncHabits(habits);
+                await syncHabits(habits, startDate);
             }
             for (const dateStr of Object.keys(dailyData)) {
                 await syncDailyData(dateStr, dailyData[dateStr]);
