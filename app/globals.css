@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* 마티스 컬러 팔레트 CSS 변수 */
+:root {
+  --bg-deep: #0c0c16;
+  --bg-panel: #1a1a35;
+  --bg-card: #161630;
+  --bg-item: #25254a;
+  --border-subtle: #2a2a4a;
+  --border-mid: #3a3a5c;
+  --border-bright: #4a4a6a;
+  --gold: #f0c040;
+  --red: #e84020;
+  --text-primary: #e8e0ff;
+  --text-muted: #aaaaaa;
+  --text-dim: #888888;
+  
+  /* 마티스 8색 팔레트 */
+  --matisse-red: #e84020;
+  --matisse-blue: #3a7abd;
+  --matisse-gold: #f0c040;
+  --matisse-mint: #40d0b0;
+  --matisse-green: #4a8030;
+  --matisse-orange: #f09040;
+  --matisse-purple: #9b7bff;
+  --matisse-violet: #d060f0;
+}
+
+@theme inline {
+  --color-background: var(--bg-deep);
+  --color-foreground: var(--text-primary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  min-height: 100dvh;
+  overscroll-behavior: none;
+}
+
+/* 커스텀 스크롤바 */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-mid);
+  border-radius: 2px;
+}
+
+/* 슬라이더 스타일 */
+input[type='range'] {
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+/* 골드 발광 애니메이션 */
+@keyframes goldGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(240, 192, 64, 0.4), 0 0 20px rgba(240, 192, 64, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(240, 192, 64, 0.7), 0 0 40px rgba(240, 192, 64, 0.4); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-8px) scale(1.01); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.gold-glow {
+  animation: goldGlow 2s ease-in-out infinite;
+}

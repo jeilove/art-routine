@@ -1,0 +1,91 @@
+# CHANGELOG — 아트 루틴 (Art Routine)
+
+> Henri Matisse: The Open Window Edition  
+> 나의 하루가 모여 하나의 명화가 됩니다.
+
+---
+
+## [v0.1.0] - 2026-03-26
+
+### 🚀 초기 프로젝트 세팅 (Phase 0)
+- Next.js 14 (App Router) + TypeScript + Tailwind CSS 프로젝트 초기화
+- pnpm 패키지 매니저 적용
+- 의존성 설치: `framer-motion`, `zustand`, `lucide-react`
+- 마티스의 창 이미지 에셋 `/public/matisse.jpg` 추가
+- 전역 CSS (`globals.css`) — 마티스 8색 팔레트 CSS 변수, 커스텀 애니메이션 정의
+- `start.bat` 배치 파일 생성 (자동 개발 서버 실행 + 브라우저 오픈)
+
+### 📐 아키텍처 & 타입 (lib/)
+- `lib/types.ts` — 공통 타입 정의 (`Habit`, `DayData`, `DailyLog`, `ViewMode`, `InputType`)
+- `lib/types.ts` — 마티스 8색 팔레트 상수 (`MATISSE_COLORS`)
+- `lib/types.ts` — `calcDayRate()` 달성률 계산 함수 구현  
+  _(각 습관 달성률의 평균 = 하루 전체 완성도. 0~1 사이 값. 예: 5개 습관 중 4개 완료 → 0.8)_
+- `lib/store.ts` — Zustand 스토어 (`useStore`) 구현
+  - Persist 미들웨어로 localStorage 영속 저장
+  - Mock 데이터 자동 생성 (`initMockData`)
+
+### 🖥️ 화면 구성 (Phase 1)
+- `app/layout.tsx` — 루트 레이아웃, 모바일 퍼스트 (max-w-480px), Noto Sans KR 폰트
+- `app/page.tsx` — Screen 1: 메인 홈
+  - 배경 명화 10% 투명도 플로팅 애니메이션
+  - 2개 메뉴 카드 (습관 설정, 캔버스 보기)
+  - Framer Motion 진입 애니메이션
+- `app/setup/page.tsx` — Screen 2: 습관 설정 화면
+  - 최대 8개 슬롯 (추가/삭제)
+  - 컬러 선택, O/X ↔ 만족도형 토글
+  - 저장 후 대시보드 이동
+
+### 🎨 캔버스 엔진 (Phase 2)
+- `components/canvas/PaletteCanvas.tsx` — 팔레트 모드 (원형 파이 차트)
+  - 최소 Opacity 15% 밑그림 보장
+  - 100% 달성 시 골드 코어 발광
+- `components/canvas/FragmentCanvas.tsx` — 명화 모드 (마스킹 이미지 조각)
+  - 6×5 격자 기준 이미지 슬라이싱
+  - 달성 시 고유 컬러 틴트 오버레이
+  - 100% 달성 시 골드 외곽선 발광
+- `components/canvas/GalleryCanvas.tsx` — 하단 30조각 전체 명화 갤러리
+  - 미래 날짜 15% 밑그림 표시
+
+### ⚡ 인터랙션 (Phase 3)
+- `components/HabitCheckList.tsx` — 습관 체크리스트
+  - O/X 버튼 / 슬라이더 컨트롤
+  - 전체 달성률 프로그레스바
+- `app/dashboard/page.tsx` — Screen 3: 대시보드 (3구역)
+  - 상단: 월간 달력 (7열 그리드), 팔레트/명화 토글
+  - 중단: 날짜 선택 → 상세 기록장 패널
+  - 하단: 전체 명화 갤러리
+
+### 📝 다음 작업 예정
+- Phase 4: Vercel Postgres + Drizzle ORM DB 연동
+
+---
+
+## [v0.1.1] — 2026-03-26
+
+### 🎨 디자인 고도화 (Matisse v2)
+- **홈 화면 UI 간소화**: "Henri Matisse: The Open Window Edition" 하단 텍스트 제거 요청 반영
+- **컬러 팔레트 채도 조정**: 원색 중심의 강한 색감에서 은은하고 우아한 저채도 톤으로 변경
+  - 레드, 블루, 골드 등 8색 전체에 "Subtle & Premium" 톤 적용
+- **홈 화면 & 설정 UI**: 새로운 컬러 시스템에 맞춰 그라데이션 및 그림자 효과 조정
+
+### 🖋️ 작가 노트 & 감정 기록 (Daily Note)
+- **기분 팔레트 추가**: 5가지 감정 이모지를 통해 오늘의 기분을 한 번의 터치로 기록
+- **100자 한 줄 평**: 오늘 하루를 회고하는 짧은 메모 기능 추가 (상세 기록장 하단)
+
+### 🏛️ 명화 순환 & 무한 루틴 시스템 (Infinite Masterpiece)
+- **30일 주기 명화 교체**: 30일이 지날 때마다 다른 명화가 캔버스에 나타납니다. (현재 4종: 마티스 2종, 클림트, 쇠라)
+- **사이클 네비게이션**: 루틴이 끝난 이전 주기의 작품을 언제든 다시 확인하고 감상할 수 있는 'Back/Next Cycle' 기능 추가
+- **동적 도슨트**: 현재 보고 있는 사이클의 데이터만 정밀하게 분석하여 전시 해설을 제공
+
+### 📐 루틴 로직 개편
+- **사용자 맞춤 시작일 시스템**: 매달 1일 시작이 아닌, 사용자가 첫 습관을 설정한 날(`startDate`)을 기준으로 30일 시퀀스 생성
+- **데이터 키 구조 변경**: 숫자(1~31) 기반에서 ISO 날짜 문자열(`YYYY-MM-DD`) 기반으로 변경하여 월 전환 시에도 데이터 정합성 유지
+- **30일 그리드 캔버스**: 대시보드 상단에 30일간의 여정을 유동적 그리드(6열)로 시각화
+
+### ⚡ UI/UX 개선 (아코디언 인터페이스)
+- **일간 기록 아코디언**: 달력 조각 터치 시 해당 날짜의 기록장이 부드럽게 펼쳐짐
+- **오늘의 기록 자동화**: 기록장 헤더 터치 시 아직 선택된 날이 없으면 자동으로 오늘 날짜가 선택됨
+- **명화 갤러리 아코디언**: 하단 전체 명화 뷰를 아코디언으로 감싸 공간 효율성 증대
+- **Framer Motion 애니메이션**: 아코디언 개폐 시 부드러운 높이 변화 효과 적용
+
+---
