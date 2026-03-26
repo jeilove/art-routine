@@ -72,7 +72,7 @@ export default function AiDocentCaption({ dailyData, habits, routineDates, cycle
         </div>
 
         <p className="text-sm leading-relaxed italic" style={{ color: '#e8e0ffcc' }}>
-            "{analysis}"
+            &quot;{analysis}&quot;
         </p>
 
         <div className="mt-4 pt-4 border-t border-[#3a3a5c] flex justify-between items-end">

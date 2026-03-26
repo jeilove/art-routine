@@ -46,6 +46,7 @@ export default function DashboardPage() {
     setLog,
     setDayNote,
     getDayData,
+    getDayRate,
     initMockData,
   } = useStore();
 
@@ -109,7 +110,7 @@ export default function DashboardPage() {
       // 클라우드 동기화 (비동기)
       const currentData = getDayData(selectedDay);
       const updatedLogs = [...currentData.logs.filter(l => l.habitId !== habitId), { habitId, value }];
-      syncDailyData(selectedDay, { ...currentData, logs: updatedLogs } as any);
+      syncDailyData(selectedDay, { ...currentData, logs: updatedLogs });
     },
     [selectedDay, setLog, getDayData]
   );
@@ -121,7 +122,7 @@ export default function DashboardPage() {
       
       // 클라우드 동기화
       const currentData = getDayData(selectedDay);
-      syncDailyData(selectedDay, { ...currentData, memo, mood } as any);
+      syncDailyData(selectedDay, { ...currentData, memo, mood });
     },
     [selectedDay, setDayNote, getDayData]
   );

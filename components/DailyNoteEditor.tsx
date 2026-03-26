@@ -27,8 +27,8 @@ export default function DailyNoteEditor({ initialMemo = '', initialMood = '', on
 
   // 날짜가 바뀌어 props가 변경될 때 로컬 상태 동기화
   useEffect(() => {
-    setMemo(initialMemo);
-    setMood(initialMood);
+    if (memo !== initialMemo) setMemo(initialMemo);
+    if (mood !== initialMood) setMood(initialMood);
     setIsSaved(false);
     if (!initialMemo && !initialMood) {
         setIsOpen(false);

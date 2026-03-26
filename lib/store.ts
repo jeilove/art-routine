@@ -85,7 +85,7 @@ export const useStore = create<ArtRoutineState>()(
           const start = new Date(startDate);
           const today = new Date(todayStr); // 오늘 00:00:00
           
-          let current = new Date(start);
+          const current = new Date(start);
           while (current < today) {
             const dateKey = current.toISOString().split('T')[0];
             const existing = updatedDailyData[dateKey] || { day: 0, logs: [] };
