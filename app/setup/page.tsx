@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Plus, Trash2, Check, Download, FolderOpen } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { Habit, MATISSE_COLORS, InputType } from '@/lib/types';
-import { syncHabits, syncFullBackup } from '@/lib/actions';
+import { syncHabits, syncFullBackup, resetUserData } from '@/lib/actions';
 import { useSession } from 'next-auth/react';
 
 export default function SetupPage() {
@@ -302,9 +302,12 @@ export default function SetupPage() {
         {isAdmin && (
            <div className="mt-12 flex gap-3 pb-8">
             <button
-                onClick={() => {
-                if (confirm('모든 기록을 삭제하고 처음부터 시작하시겠습니까?')) {
+                onClick={async () => {
+                if (confirm('모든 기록을 삭제하고 처음부터 시작하시겠습니까? (서버 데이터도 모두 삭제됩니다)')) {
+                    setIsImporting(true); // 로딩 표시 재활용
+                    await resetUserData();
                     resetData();
+                    setIsImporting(false);
                     router.push('/');
                 }
                 }}

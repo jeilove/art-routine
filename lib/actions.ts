@@ -3,7 +3,7 @@
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { users, habits, dailyData, dailyLogs } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, inArray } from "drizzle-orm"
 import { Habit, DayData } from "@/lib/types"
 
 /**
@@ -158,6 +158,32 @@ export async function syncFullBackup(data: { habits: Habit[], dailyData: Record<
             dates.map(dateStr => syncDailyData(dateStr, data.dailyData[dateStr]))
         );
     }
+
+    return { success: true };
+}
+
+/**
+ * 5. 유저의 모든 데이터 초기화 (백엔드)
+ */
+export async function resetUserData() {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false };
+
+    const userId = session.user.id;
+
+    // 5-1. 자식 데이터(dailyLogs) 먼저 삭제
+    const userDailyData = await db.query.dailyData.findMany({
+        where: eq(dailyData.userId, userId),
+    });
+    const ids = userDailyData.map(d => d.id);
+    if (ids.length > 0) {
+        await db.delete(dailyLogs).where(inArray(dailyLogs.dailyDataId, ids));
+    }
+
+    // 5-2. 나머지 데이터 일괄 삭제
+    await db.delete(dailyData).where(eq(dailyData.userId, userId));
+    await db.delete(habits).where(eq(habits.userId, userId));
+    await db.update(users).set({ startDate: null }).where(eq(users.id, userId));
 
     return { success: true };
 }
