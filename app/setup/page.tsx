@@ -189,6 +189,28 @@ export default function SetupPage() {
            </label>
         </div>
 
+        {/* 루틴 시작일 설정 섹션 */}
+        <div className="mb-6 rounded-2xl p-4 border" style={{ backgroundColor: '#161630', borderColor: '#3a3a5c' }}>
+            <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-bold text-[#c5a454]">루틴 시작일 설정</span>
+                <p className="text-[10px]" style={{ color: '#666688' }}>※ 30일 주기와 명화 변경의 기준이 됩니다.</p>
+            </div>
+            <input
+                type="date"
+                value={startDate || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  useStore.setState({ startDate: val });
+                }}
+                className="w-full rounded-xl px-4 py-3 text-sm outline-none"
+                style={{
+                  backgroundColor: '#25254a',
+                  border: '1px solid #3a3a5c',
+                  color: '#e8e0ff',
+                }}
+            />
+        </div>
+
         <AnimatePresence>
           {habits.map((habit, idx) => (
             <motion.div
