@@ -1,14 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Palette, Frame } from 'lucide-react';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { Palette, Frame, LogIn, LogOut, User } from 'lucide-react';
 import { useStore } from '@/lib/store';
 
 export default function HomePage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const { dailyData, startDate, initMockData } = useStore();
+
+  const isLoading = status === 'loading';
+  const isLoggedIn = status === 'authenticated';
 
   // 데이터가 없으면 Mock 데이터 초기화
   useEffect(() => {
@@ -17,10 +19,48 @@ export default function HomePage() {
     }
   }, [dailyData, startDate, initMockData]);
 
+  const handleMenuClick = (path: string) => {
+    if (!isLoggedIn) {
+      signIn('google');
+      return;
+    }
+    router.push(path);
+  };
+
   return (
     <div className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden px-6 py-12"
       style={{ backgroundColor: '#0c0c16' }}
     >
+      {/* 상단 로그인 정보 (유리창 효과) */}
+      <div className="absolute top-6 right-6 z-20">
+        {isLoggedIn ? (
+          <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#d66d5c] to-[#c5a454] flex items-center justify-center overflow-hidden border border-white/20">
+              {session.user?.image ? (
+                <img src={session.user.image} alt="user" className="w-full h-full object-cover" />
+              ) : (
+                <User size={14} className="text-white" />
+              )}
+            </div>
+            <span className="text-xs font-medium text-white/80">{session.user?.name}님</span>
+            <button 
+              onClick={() => signOut()}
+              className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white/40 hover:text-white"
+            >
+              <LogOut size={14} />
+            </button>
+          </div>
+        ) : !isLoading && (
+          <button 
+            onClick={() => signIn('google')}
+            className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/20 transition-all text-sm font-bold text-white shadow-xl"
+          >
+            <LogIn size={16} />
+            로그인
+          </button>
+        )}
+      </div>
+
       {/* 배경 명화 — 10% 투명도 플로팅 이미지 */}
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none animate-float"
@@ -69,17 +109,29 @@ export default function HomePage() {
           <br />
           하나의 명화가 됩니다.
         </p>
+
+        {!isLoggedIn && !isLoading && (
+          <motion.p 
+            className="mt-6 text-[11px] text-[#d66d5c] font-bold tracking-tighter"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+          >
+            ※ 기록을 시작하려면 먼저 로그인이 필요합니다.
+          </motion.p>
+        )}
       </motion.div>
 
       {/* 메뉴 카드 */}
       <div className="relative z-10 w-full max-w-sm flex flex-col gap-4">
         {/* 카드 1: 습관 설정 */}
         <motion.button
-          onClick={() => router.push('/setup')}
+          onClick={() => handleMenuClick('/setup')}
           className="w-full text-left rounded-2xl p-5 border transition-all duration-300"
           style={{
             background: 'linear-gradient(135deg, rgba(214,109,92,0.15) 0%, rgba(214,109,92,0.05) 100%)',
             borderColor: 'rgba(214,109,92,0.4)',
+            opacity: isLoggedIn ? 1 : 0.7
           }}
           initial={{ opacity: 0, x: -32 }}
           animate={{ opacity: 1, x: 0 }}
@@ -103,7 +155,7 @@ export default function HomePage() {
                 나의 물감(습관) 준비하기
               </p>
               <p className="text-xs" style={{ color: '#888888' }}>
-                명화를 그리기 위한 최대 8개의 습관을 설정하세요.
+                {isLoggedIn ? '명화를 그리기 위한 습관을 설정하세요.' : '로그인 후 습관 설정을 시작하세요.'}
               </p>
             </div>
           </div>
@@ -111,11 +163,12 @@ export default function HomePage() {
 
         {/* 카드 2: 대시보드 */}
         <motion.button
-          onClick={() => router.push('/dashboard')}
+          onClick={() => handleMenuClick('/dashboard')}
           className="w-full text-left rounded-2xl p-5 border transition-all duration-300"
           style={{
             background: 'linear-gradient(135deg, rgba(197, 164, 84, 0.15) 0%, rgba(197, 164, 84, 0.05) 100%)',
             borderColor: 'rgba(197, 164, 84, 0.4)',
+            opacity: isLoggedIn ? 1 : 0.7
           }}
           initial={{ opacity: 0, x: 32 }}
           animate={{ opacity: 1, x: 0 }}
@@ -139,7 +192,7 @@ export default function HomePage() {
                 내 삶의 캔버스 보기
               </p>
               <p className="text-xs" style={{ color: '#888888' }}>
-                오늘까지 채워진 나의 명화와 일간 기록을 확인하세요.
+                {isLoggedIn ? '채워진 나의 명화와 기록을 확인하세요.' : '로그인 후 나의 캔버스를 확인하세요.'}
               </p>
             </div>
           </div>
