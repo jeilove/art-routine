@@ -23,10 +23,7 @@ export default function HomePage() {
   }, [dailyData, startDate, initMockData]);
 
   const handleMenuClick = (path: string) => {
-    if (!isLoggedIn) {
-      signIn('google');
-      return;
-    }
+    // 비로그인 모드 허용 (단, 데이터 동기화 안됨 메시지 표시 가능)
     router.push(path);
   };
 
@@ -38,7 +35,7 @@ export default function HomePage() {
       <div className="absolute top-6 right-6 z-20">
         {isLoggedIn ? (
           <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-            <div className="w-6 h-6 rounded-full bg-linear-to-tr from-[#d66d5c] to-[#c5a454] flex items-center justify-center overflow-hidden border border-white/20">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#d66d5c] to-[#c5a454] flex items-center justify-center overflow-hidden border border-white/20">
               {session.user?.image ? (
                 <img src={session.user.image} alt="user" className="w-full h-full object-cover" />
               ) : (
@@ -115,12 +112,12 @@ export default function HomePage() {
 
         {!isLoggedIn && !isLoading && (
           <motion.p 
-            className="mt-6 text-[11px] text-[#d66d5c] font-bold tracking-tighter"
+            className="mt-6 text-[10px] text-white/30 font-bold tracking-tighter"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
           >
-            ※ 기록을 시작하려면 먼저 로그인이 필요합니다.
+            ※ 로그인을 하지 않아도 사용이 가능합니다 (기기 전용)
           </motion.p>
         )}
       </motion.div>
@@ -134,7 +131,6 @@ export default function HomePage() {
           style={{
             background: 'linear-gradient(135deg, rgba(214,109,92,0.15) 0%, rgba(214,109,92,0.05) 100%)',
             borderColor: 'rgba(214,109,92,0.4)',
-            opacity: isLoggedIn ? 1 : 0.7
           }}
           initial={{ opacity: 0, x: -32 }}
           animate={{ opacity: 1, x: 0 }}
@@ -158,7 +154,7 @@ export default function HomePage() {
                 나의 물감(습관) 준비하기
               </p>
               <p className="text-xs" style={{ color: '#888888' }}>
-                {isLoggedIn ? '명화를 그리기 위한 습관을 설정하세요.' : '로그인 후 습관 설정을 시작하세요.'}
+                명화를 그리기 위한 습관을 설정하세요.
               </p>
             </div>
           </div>

@@ -78,9 +78,9 @@ export default function HabitCheckList({ habits, dayData, onUpdate }: HabitCheck
                 onClick={() => onUpdate(habit.id, isDone ? 0 : 100)}
                 className="w-full py-2 rounded-lg text-sm font-bold transition-all duration-200"
                 style={{
-                  backgroundColor: isDone ? habit.color : '#161630',
-                  color: isDone ? '#0c0c16' : '#888888',
-                  border: `1px solid ${isDone ? habit.color : '#3a3a5c'}`,
+                  backgroundColor: isDone ? `${habit.color}22` : '#161630',
+                  color: isDone ? habit.color : '#888888',
+                  border: `1px solid ${isDone ? `${habit.color}66` : '#3a3a5c'}`,
                 }}
               >
                 {isDone ? '✔ 달성 완료' : '미완료'}

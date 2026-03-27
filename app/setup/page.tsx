@@ -3,16 +3,25 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Plus, Trash2, Check, Download, Upload } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, Check, Download, FolderOpen } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { Habit, MATISSE_COLORS, InputType } from '@/lib/types';
-import { syncHabits, syncDailyData } from '@/lib/actions';
+import { syncHabits } from '@/lib/actions';
 import { useSession } from 'next-auth/react';
 
 export default function SetupPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { habits: savedHabits, setHabits, initMockData, resetData, dailyData, startDate, hydrate } = useStore();
+  const { 
+    habits: savedHabits, 
+    setHabits, 
+    initMockData, 
+    resetData, 
+    dailyData, 
+    startDate, 
+    hydrate 
+  } = useStore();
+  
   const [habits, setLocalHabits] = useState<Habit[]>(savedHabits);
   const [saved, setSaved] = useState(false);
 
@@ -51,20 +60,24 @@ export default function SetupPage() {
 
   // 백업하기 (JSON 다운로드)
   const handleExport = () => {
-    const backupData = {
-      habits: savedHabits,
-      dailyData,
-      startDate,
-      version: 'v0.2.0',
-      exportedAt: new Date().toISOString(),
-    };
-    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `art-routine-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+        const backupData = {
+          habits: savedHabits,
+          dailyData,
+          startDate,
+          version: 'v0.2.1',
+          exportedAt: new Date().toISOString(),
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `art-routine-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        alert('백업 생성 중 오류가 발생했습니다.');
+    }
   };
 
   // 복원하기 (JSON 업로드)
@@ -73,16 +86,21 @@ export default function SetupPage() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = async (event) => {
+    reader.onload = (event) => {
       try {
         const json = JSON.parse(event.target?.result as string);
-        if (confirm('데이터를 복원하시겠습니까? 현재 기록이 모두 교체됩니다.')) {
+        if (confirm('데이터를 불러오시겠습니까? 현재 기기의 기록이 교체됩니다.')) {
+          // 스토어 업데이트
           hydrate({
             habits: json.habits || [],
             dailyData: json.dailyData || {},
             startDate: json.startDate || null,
           });
-          alert('복원이 완료되었습니다.');
+          
+          // 로컬 상태 강제 동기화
+          setLocalHabits(json.habits || []);
+          
+          alert('데이터를 성공적으로 불러왔습니다.');
           router.push('/dashboard');
         }
       } catch (err) {
@@ -90,6 +108,7 @@ export default function SetupPage() {
       }
     };
     reader.readAsText(file);
+    e.target.value = ''; // 파일 선택 초기화 (같은 파일 다시 선택 가능하게)
   };
 
   return (
@@ -132,14 +151,14 @@ export default function SetupPage() {
         <div className="mb-6 grid grid-cols-2 gap-3">
            <button 
              onClick={handleExport}
-             className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25254a] border border-white/5 text-[11px] font-bold text-white/80"
+             className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25254a] border border-white/5 text-[11px] font-bold text-white/80 transition-all active:scale-95"
            >
              <Download size={14} className="text-[#c5a454]" />
              데이터 백업하기
            </button>
-           <label className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25254a] border border-white/5 text-[11px] font-bold text-white/80 cursor-pointer">
-             <Upload size={14} className="text-[#c5a454]" />
-             기록 복원하기
+           <label className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25254a] border border-white/5 text-[11px] font-bold text-white/80 cursor-pointer transition-all active:scale-95">
+             <FolderOpen size={14} className="text-[#c5a454]" />
+             데이터 불러오기
              <input type="file" accept=".json" onChange={handleImport} className="hidden" />
            </label>
         </div>
@@ -293,7 +312,7 @@ export default function SetupPage() {
         <motion.button
           onClick={handleSave}
           disabled={saved || habits.filter((h) => h.name.trim()).length === 0}
-          className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all"
+          className="w-full py-[13px] rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all"
           style={{
             background: saved
               ? 'linear-gradient(135deg, #6b8ba4, #78b3a3)'

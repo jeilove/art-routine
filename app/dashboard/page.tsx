@@ -214,9 +214,8 @@ export default function DashboardPage() {
               >
                 <ChevronLeft size={18} />
               </button>
-              <div className="text-center">
-                  <p className="text-[10px] font-bold" style={{ color: '#c5a454' }}>Cycle {viewCycleIdx + 1}</p>
-                  <p className="text-[11px] font-serif italic truncate max-w-[180px]" style={{ color: '#e8e0ff' }}>
+              <div className="flex-1 text-center flex flex-col items-center justify-center">
+                  <p className="text-[14px] font-serif italic truncate max-w-[220px] font-bold" style={{ color: '#e8e0ff' }}>
                     {currentMasterpiece.title}
                   </p>
               </div>
