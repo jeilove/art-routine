@@ -122,9 +122,11 @@ export async function fetchUserData() {
         }
     });
 
+    const today = new Date().toISOString().split('T')[0];
+
     return {
-        startDate: user?.startDate || null,
-        habits: dbHabits as Habit[],
+        startDate: user?.startDate || today, // DB에 없으면 오늘을 기본값으로 제공
+        habits: dbHabits.length > 0 ? (dbHabits as Habit[]) : [], // 습관은 그대로 반환
         dailyData: dbDailyData.reduce((acc, curr) => {
             acc[curr.dateStr] = {
                 day: curr.dayNum,

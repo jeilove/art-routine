@@ -61,7 +61,7 @@ export const useStore = create<ArtRoutineState>()(
         });
 
         set({ 
-          habits: data.habits || get().habits, 
+          habits: data.habits && data.habits.length > 0 ? data.habits : get().habits, 
           dailyData: migratedDailyData,
           startDate: data.startDate || get().startDate,
           selectedDay: null // 복구 후 선택일 초기화

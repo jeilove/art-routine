@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={`${notoSansKr.className} antialiased`}>
         <script
           dangerouslySetInnerHTML={{
-            __html: `console.log("%c🎨 Art Routine v0.2.10 %c| Matisse Edition", "color: #c5a454; font-weight: bold; font-size: 1.2em;", "color: #888;");`,
+            __html: `console.log("%c🎨 Art Routine v0.2.11 %c| Matisse Edition", "color: #c5a454; font-weight: bold; font-size: 1.2em;", "color: #888;");`,
           }}
         />
         <Providers>
