@@ -141,19 +141,22 @@ export async function fetchUserData() {
 }
 
 /**
- * 4. 전체 백업 데이터 서버로 강제 푸시 (복구 시 사용)
+ * 4. 전체 백업 데이터 서버로 강제 푸시 (복구 시 사용 - 병렬 처리로 속도 개선)
  */
 export async function syncFullBackup(data: { habits: Habit[], dailyData: Record<string, DayData>, startDate: string | null }) {
     const session = await auth();
     if (!session?.user?.id) return { success: false };
 
-    // 4-1. 습관 및 시작일 업데이트
+    // 4-1. 습관 및 시작일 업데이트 (기존 습관 삭제 후 재삽입)
     await syncHabits(data.habits, data.startDate);
 
-    // 4-2. 모든 일일 기록 데이터 업데이트 (병렬 처리하되 순차적으로)
+    // 4-2. 모든 일일 기록 데이터 업데이트 (병렬 처리로 속도 대폭 향상)
     const dates = Object.keys(data.dailyData);
-    for (const dateStr of dates) {
-        await syncDailyData(dateStr, data.dailyData[dateStr]);
+    if (dates.length > 0) {
+        // 모든 날짜의 동기화 작업을 한 번에 실행 (병렬)
+        await Promise.all(
+            dates.map(dateStr => syncDailyData(dateStr, data.dailyData[dateStr]))
+        );
     }
 
     return { success: true };
