@@ -147,8 +147,6 @@ export async function syncFullBackup(data: { habits: Habit[], dailyData: Record<
     const session = await auth();
     if (!session?.user?.id) return { success: false };
 
-    const userId = session.user.id;
-
     // 4-1. 습관 및 시작일 업데이트
     await syncHabits(data.habits, data.startDate);
 

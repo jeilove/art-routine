@@ -47,7 +47,7 @@ export const useStore = create<ArtRoutineState>()(
 
       setSyncing: (val) => set({ isSyncing: val }),
 
-      hydrate: (data: any) => {
+      hydrate: (data: { habits: Habit[], dailyData: Record<string, DayData>, startDate: string | null }) => {
         // 하위 호환성: 만약 dailyData의 값이 배열이면(v0.1.x) 객체 구조(v0.2.x)로 변환
         const migratedDailyData = { ...data.dailyData };
         Object.keys(migratedDailyData).forEach(key => {

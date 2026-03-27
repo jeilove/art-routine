@@ -82,8 +82,8 @@ export default function SetupPage() {
   };
 
   // 데이터 불러오기 (JSON 업로드)
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
@@ -117,7 +117,7 @@ export default function SetupPage() {
             router.push('/dashboard');
           }, 400);
         }
-      } catch (err) {
+      } catch {
         alert('올바르지 않은 백업 파일입니다.');
       } finally {
         setIsImporting(false);
