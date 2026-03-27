@@ -213,7 +213,7 @@ export const useStore = create<ArtRoutineState>()(
 
       resetData: () => {
         set({ 
-          startDate: null, 
+          startDate: new Date().toISOString().split('T')[0], 
           dailyData: {}, 
           habits: DEFAULT_HABITS,
           selectedDay: null

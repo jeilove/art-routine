@@ -187,10 +187,12 @@ export async function resetUserData() {
 
         await db.delete(dailyData).where(eq(dailyData.userId, userId));
         await db.delete(habits).where(eq(habits.userId, userId));
-        await db.update(users).set({ startDate: null }).where(eq(users.id, userId));
+
+        const today = new Date().toISOString().split('T')[0];
+        await db.update(users).set({ startDate: today }).where(eq(users.id, userId));
 
         revalidatePath('/'); // 캐시 무효화
-        console.log(`[Server Action] Reset successful for user: ${userId}`);
+        console.log(`[Server Action] Reset successful (to empty canvas) for user: ${userId}`);
         return { success: true };
     } catch (error) {
         console.error("[Server Action] Reset failed:", error);
