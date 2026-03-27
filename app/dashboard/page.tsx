@@ -59,11 +59,7 @@ export default function DashboardPage() {
   // 오늘 날짜 문자열 (YYYY-MM-DD)
   const todayStr = new Date().toISOString().split('T')[0];
 
-  useEffect(() => {
-    if (Object.keys(dailyData).length === 0 && !startDate) {
-      initMockData();
-    }
-  }, [dailyData, startDate, initMockData]);
+  // 데이터 무결성을 위해 자동 Mock 생성 제외
 
   // 오늘이 총 몇 번째 조약인지 (1부터 시작)
   const todayGlobalIndex = useMemo(() => {

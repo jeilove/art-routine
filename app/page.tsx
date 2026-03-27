@@ -15,12 +15,7 @@ export default function HomePage() {
   const isLoading = status === 'loading';
   const isLoggedIn = status === 'authenticated';
 
-  // 데이터가 없으면 Mock 데이터 초기화
-  useEffect(() => {
-    if (Object.keys(dailyData).length === 0 && !startDate) {
-      initMockData();
-    }
-  }, [dailyData, startDate, initMockData]);
+  // 데이터 무결성을 위해 자동 Mock 생성 제외
 
   const handleMenuClick = (path: string) => {
     // 비로그인 모드 허용 (단, 데이터 동기화 안됨 메시지 표시 가능)

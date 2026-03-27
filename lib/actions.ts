@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { users, habits, dailyData, dailyLogs } from "@/lib/db/schema"
 import { eq, and, inArray } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
 import { Habit, DayData } from "@/lib/types"
 
 /**
@@ -188,6 +189,7 @@ export async function resetUserData() {
         await db.delete(habits).where(eq(habits.userId, userId));
         await db.update(users).set({ startDate: null }).where(eq(users.id, userId));
 
+        revalidatePath('/'); // 캐시 무효화
         console.log(`[Server Action] Reset successful for user: ${userId}`);
         return { success: true };
     } catch (error) {
