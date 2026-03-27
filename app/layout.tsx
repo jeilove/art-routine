@@ -22,6 +22,11 @@ export default function RootLayout({
   return (
     <html lang="ko" className={notoSansKr.variable}>
       <body className={`${notoSansKr.className} antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `console.log("%c🎨 Art Routine v0.1.2 %c| Matisse Edition", "color: #c5a454; font-weight: bold; font-size: 1.2em;", "color: #888;");`,
+          }}
+        />
         <Providers>
           <main className="min-h-dvh max-w-[480px] mx-auto relative overflow-x-hidden">
             {children}
