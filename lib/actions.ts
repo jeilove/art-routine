@@ -166,24 +166,32 @@ export async function syncFullBackup(data: { habits: Habit[], dailyData: Record<
  * 5. 유저의 모든 데이터 초기화 (백엔드)
  */
 export async function resetUserData() {
-    const session = await auth();
-    if (!session?.user?.id) return { success: false };
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
-    const userId = session.user.id;
+        const userId = session.user.id;
 
-    // 5-1. 자식 데이터(dailyLogs) 먼저 삭제
-    const userDailyData = await db.query.dailyData.findMany({
-        where: eq(dailyData.userId, userId),
-    });
-    const ids = userDailyData.map(d => d.id);
-    if (ids.length > 0) {
-        await db.delete(dailyLogs).where(inArray(dailyLogs.dailyDataId, ids));
+        // 5-1. 일괄 삭제 (트랜잭션처럼 순서대로)
+        // dailyLogs -> dailyData 순으로 삭제 (외래키 제약 고려)
+        const userDailyData = await db.query.dailyData.findMany({
+            where: eq(dailyData.userId, userId),
+            columns: { id: true }
+        });
+        
+        const ids = userDailyData.map(d => d.id);
+        if (ids.length > 0) {
+            await db.delete(dailyLogs).where(inArray(dailyLogs.dailyDataId, ids));
+        }
+
+        await db.delete(dailyData).where(eq(dailyData.userId, userId));
+        await db.delete(habits).where(eq(habits.userId, userId));
+        await db.update(users).set({ startDate: null }).where(eq(users.id, userId));
+
+        console.log(`[Server Action] Reset successful for user: ${userId}`);
+        return { success: true };
+    } catch (error) {
+        console.error("[Server Action] Reset failed:", error);
+        return { success: false, error: String(error) };
     }
-
-    // 5-2. 나머지 데이터 일괄 삭제
-    await db.delete(dailyData).where(eq(dailyData.userId, userId));
-    await db.delete(habits).where(eq(habits.userId, userId));
-    await db.update(users).set({ startDate: null }).where(eq(users.id, userId));
-
-    return { success: true };
 }

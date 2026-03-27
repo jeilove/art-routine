@@ -24,7 +24,7 @@ export default function SetupPage() {
   
   const [habits, setLocalHabits] = useState<Habit[]>(savedHabits);
   const [saved, setSaved] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
+  const [loadingText, setLoadingText] = useState<string | null>(null);
 
   const isAdmin = session?.user?.email === 'jeilove17@gmail.com';
 
@@ -91,7 +91,7 @@ export default function SetupPage() {
       try {
         const json = JSON.parse(event.target?.result as string);
         if (confirm('데이터를 불러오시겠습니까? 현재 기기의 기록이 모두 교체됩니다.')) {
-          setIsImporting(true);
+          setLoadingText('데이터 복원 중...');
           
           // 1. 스토어 하이드레이션
           hydrate(json);
@@ -120,7 +120,7 @@ export default function SetupPage() {
       } catch {
         alert('올바르지 않은 백업 파일입니다.');
       } finally {
-        setIsImporting(false);
+        setLoadingText(null);
       }
     };
     reader.readAsText(file);
@@ -133,11 +133,11 @@ export default function SetupPage() {
       style={{ backgroundColor: '#0c0c16' }}
     >
       {/* 로딩 오버레이 */}
-      {isImporting && (
+      {loadingText && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
            <div className="text-white font-bold flex flex-col items-center gap-4">
               <div className="w-8 h-8 border-4 border-[#c5a454] border-t-transparent rounded-full animate-spin" />
-              <p>데이터 복원 중...</p>
+              <p>{loadingText}</p>
            </div>
         </div>
       )}
@@ -304,11 +304,19 @@ export default function SetupPage() {
             <button
                 onClick={async () => {
                 if (confirm('모든 기록을 삭제하고 처음부터 시작하시겠습니까? (서버 데이터도 모두 삭제됩니다)')) {
-                    setIsImporting(true); // 로딩 표시 재활용
-                    await resetUserData();
-                    resetData();
-                    setIsImporting(false);
-                    router.push('/');
+                    setLoadingText('모든 기록을 깨끗하게 비우는 중...'); 
+                    const result = await resetUserData();
+                    
+                    if (result.success) {
+                        resetData(); // 로컬 스토어 초기화
+                        setTimeout(() => {
+                           setLoadingText(null);
+                           router.push('/');
+                        }, 800);
+                    } else {
+                        setLoadingText(null);
+                        alert(`초기화 실패: ${result.error || '잠시 후 다시 시도해 주세요.'}`);
+                    }
                 }
                 }}
                 className="flex-1 py-3 rounded-xl border border-red-500/20 text-[10px] font-bold text-red-500/40 hover:bg-red-500/5 transition-all"
