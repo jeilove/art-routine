@@ -13,13 +13,10 @@
 - **증상**: `NextAuth`에 `DrizzleAdapter`와 `db`가 포함되어 미들웨어(Edge Runtime)에서 Node.js 전용 API 호출 에러 발생.
 - **조치**: `auth.config.ts`를 생성하여 DB와 무관한 공통 설정만 담고, 미들웨어에서는 이를 사용하도록 분리함. `auth.ts`는 서버 사이드에서 어댑터를 연결하여 사용함.
 
-#### [버전문제] ESLint Build Error (수정 완료)
-- **증상**: `next build` 시 ESLint 경고가 에러로 처리되어 빌드 중단.
+#### [에이전트실수] Auth Session 500 에러 (조치 중)
+- **증상**: 온라인 사이트 접속 시 `Art Routine v0.1.2`는 확인되나, `/api/auth/session` 호출 시 500 에러 발생.
+- **분석**: `AUTH_SECRET` 환경 변수 누락 가능성 또는 JWT 전략 전환 시 ID 매핑 로직(`jwt` 콜백) 부재.
 - **조치**: 
-  - `DailyNoteEditor.tsx`에서 `useEffect` 내 `setState` 호출로 인한 경고를 부모 컴포넌트(`DashboardPage`)에서 `key={selectedDay}`를 사용하는 방식으로 리팩토링하여 해결.
-  - 미사용 변수(`InputType`, `generateMockData`, `boolean`, `Sparkles`, `Info` 등) 전수 제거.
-  - `useEffect` 의존성 배열에 누락된 의존성 추가.
-
-#### [성능향상] 폰트 로딩 최적화
-- **증상**: `<link>` 방식의 외부 폰트 로드 경고 발생.
-- **조치**: `next/font/google`을 사용하여 `Noto Sans KR` 폰트를 최적화하고 경고를 제거함.
+  - `auth.ts`에 `jwt` 콜백을 추가하여 유저 ID 매핑 로직 보강.
+  - `trustHost: true` 및 `debug` 옵션 추가.
+  - `.env.example` 파일을 추가하여 필수 환경 변수 안내.
