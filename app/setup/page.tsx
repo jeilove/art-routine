@@ -86,19 +86,19 @@ export default function SetupPage() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const json = JSON.parse(event.target?.result as string);
         if (confirm('데이터를 불러오시겠습니까? 현재 기기의 기록이 교체됩니다.')) {
-          // 스토어 업데이트
+          // 1. 스토어 하이드레이션 (객체 복사하여 전달)
           hydrate({
-            habits: json.habits || [],
-            dailyData: json.dailyData || {},
+            habits: [...(json.habits || [])],
+            dailyData: { ...(json.dailyData || {}) },
             startDate: json.startDate || null,
           });
           
-          // 로컬 상태 강제 동기화
-          setLocalHabits(json.habits || []);
+          // 2. 현재 페이지의 로컬 상태도 즉시 업데이트 (비동기 이슈 방지)
+          setLocalHabits([...(json.habits || [])]);
           
           alert('데이터를 성공적으로 불러왔습니다.');
           router.push('/dashboard');

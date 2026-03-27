@@ -48,9 +48,9 @@ export const useStore = create<ArtRoutineState>()(
       setSyncing: (val) => set({ isSyncing: val }),
 
       hydrate: (data) => set({ 
-        habits: data.habits.length > 0 ? data.habits : get().habits, 
+        habits: data.habits, 
         dailyData: data.dailyData,
-        startDate: data.startDate || get().startDate
+        startDate: data.startDate
       }),
 
       setHabits: (newHabits) => {

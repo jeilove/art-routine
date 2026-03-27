@@ -6,17 +6,13 @@ export default {
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      checks: ['pkce', 'state'],
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isDashboard = nextUrl.pathname.startsWith('/dashboard') || nextUrl.pathname.startsWith('/setup');
-      
-      if (isDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirect to login
-      }
+    authorized({ auth }) {
+      // 모든 사용자(로그인/비로그인)가 모든 메뉴에 접근할 수 있도록 개방
       return true;
     },
     session({ session, token }) {
