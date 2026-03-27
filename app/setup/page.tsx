@@ -298,31 +298,12 @@ export default function SetupPage() {
           </motion.button>
         )}
 
-        {/* 관리자 전용 데이터 관리 버튼 (jeilove17@gmail.com 전용) */}
-        {isAdmin && (
-           <div className="mt-12 flex gap-3 pb-8">
-            <button
-                onClick={async () => {
-                if (confirm('모든 기록을 삭제하고 처음부터 시작하시겠습니까? (서버 데이터도 모두 삭제됩니다)')) {
-                    setLoadingText('모든 기록을 깨끗하게 비우는 중...'); 
-                    const result = await resetUserData();
-                    
-                    if (result.success) {
-                        resetData(); // 로컬 스토어 초기화
-                        setTimeout(() => {
-                           setLoadingText(null);
-                           router.push('/');
-                        }, 800);
-                    } else {
-                        setLoadingText(null);
-                        alert(`초기화 실패: ${result.error || '잠시 후 다시 시도해 주세요.'}`);
-                    }
-                }
-                }}
-                className="flex-1 py-3 rounded-xl border border-red-500/20 text-[10px] font-bold text-red-500/40 hover:bg-red-500/5 transition-all"
-            >
-                전체 초기화 (관리자)
-            </button>
+        {/* 데이터 관리 섹션 */}
+        <div className="mt-12 flex flex-col gap-3 pb-8">
+          <p className="text-[10px] text-center mb-1" style={{ color: '#666688' }}>
+            ※ 샘플 데이터 로드시 현재 모든 기록이 초기화되거나 덮어씌워질 수 있습니다.
+          </p>
+          <div className="flex gap-3">
             <button
                 onClick={() => {
                 if (confirm('샘플 조각들을 채워보시겠습니까? (현재 기록이 덮어씌워질 수 있습니다)')) {
@@ -330,12 +311,37 @@ export default function SetupPage() {
                     router.push('/dashboard');
                 }
                 }}
-                className="flex-1 py-3 rounded-xl border border-[#c5a454]/10 text-[10px] font-bold text-[#c5a454]/40 hover:bg-[#c5a454]/5 transition-all"
+                className="flex-1 py-3 rounded-xl border border-[#c5a454]/20 bg-[#c5a454]/5 text-[10px] font-bold text-[#c5a454] transition-all active:scale-95"
             >
-                샘플 데이터 로드
+                🎨 샘플 데이터 로드 (30일분)
             </button>
+            
+            {isAdmin && (
+              <button
+                  onClick={async () => {
+                  if (confirm('모든 기록을 삭제하고 처음부터 시작하시겠습니까? (서버 데이터도 모두 삭제됩니다)')) {
+                      setLoadingText('모든 기록을 깨끗하게 비우는 중...'); 
+                      const result = await resetUserData();
+                      
+                      if (result.success) {
+                          resetData(); // 로컬 스토어 초기화
+                          setTimeout(() => {
+                            setLoadingText(null);
+                            router.push('/');
+                          }, 800);
+                      } else {
+                          setLoadingText(null);
+                          alert(`초기화 실패: ${result.error || '잠시 후 다시 시도해 주세요.'}`);
+                      }
+                  }
+                  }}
+                  className="flex-1 py-3 rounded-xl border border-red-500/20 text-[10px] font-bold text-red-500/40 hover:bg-red-500/5 transition-all"
+              >
+                  전체 초기화 (관리자)
+              </button>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* 저장 버튼 */}

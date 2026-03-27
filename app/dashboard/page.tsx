@@ -217,7 +217,10 @@ export default function DashboardPage() {
                 disabled={viewCycleIdx === 0}
                 className="p-1.5 sm:p-2 disabled:opacity-30 shrink-0"
               >
-                <ChevronLeft size={18} />
+                <div className="flex items-center gap-1.5">
+                   <ChevronLeft size={18} />
+                   {viewCycleIdx > 0 && <span className="text-[10px] font-bold">이전 루틴</span>}
+                </div>
               </button>
               <div className="flex-1 text-center flex flex-col items-center justify-center min-w-0 px-2">
                   <p className="text-[12px] sm:text-[14px] font-serif italic truncate max-w-full font-bold" style={{ color: '#e8e0ff' }}>
@@ -229,9 +232,28 @@ export default function DashboardPage() {
                 disabled={viewCycleIdx >= currentCycleIdx}
                 className="p-1.5 sm:p-2 disabled:opacity-30 shrink-0"
               >
-                <ChevronRight size={18} />
+                <div className="flex items-center gap-1.5">
+                   {viewCycleIdx < currentCycleIdx && <span className="text-[10px] font-bold">다음 루틴</span>}
+                   <ChevronRight size={18} />
+                </div>
               </button>
            </div>
+
+           {/* 30일 주기 안내 힌트 (처음 한 번만 노출되도록 할 수 있으나 현재는 상시 노출로 설정) */}
+           {viewCycleIdx === currentCycleIdx && currentCycleIdx > 0 && Object.keys(dailyData).length > 0 && (
+             <motion.div 
+               initial={{ opacity: 0, y: -10 }}
+               animate={{ opacity: 1, y: 0 }}
+               className="mb-4 p-3 rounded-xl bg-[#c5a454]/10 border border-[#c5a454]/20 text-center"
+             >
+                <p className="text-[10px] font-bold text-[#c5a454]">
+                  ✨ 새로운 30일 루틴 명화가 시작되었습니다!
+                </p>
+                <p className="text-[9px] text-[#888888] mt-1">
+                  이전 작의 캔버스와 기록은 상단 화살표를 눌러 <span className="text-white/60">"이전 루틴"</span>에서 확인하세요.
+                </p>
+             </motion.div>
+           )}
 
            <div className="grid grid-cols-6 gap-x-2 gap-y-4">
               {routineDates.map((dateStr, idx) => {

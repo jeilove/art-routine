@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export default function VersionLogger() {
   useEffect(() => {
     console.log(
-      '%c🎨 Art Routine v0.2.12 %c| Mobile Fix Applied',
+      '%c🎨 Art Routine v0.3.0 %c| Data Sync & Cycle Reset Fix',
       'color: #c5a454; font-weight: bold; font-size: 1.2em;',
       'color: #888;'
     );
