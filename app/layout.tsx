@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/Providers';
+import VersionLogger from '@/components/VersionLogger';
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ['latin'],
@@ -22,11 +23,8 @@ export default function RootLayout({
   return (
     <html lang="ko" className={notoSansKr.variable}>
       <body className={`${notoSansKr.className} antialiased`}>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `console.log("%c🎨 Art Routine v0.2.11 %c| Matisse Edition", "color: #c5a454; font-weight: bold; font-size: 1.2em;", "color: #888;");`,
-          }}
-        />
+        {/* CSP 정책 충돌 없이 버전 로그를 출력하는 클라이언트 컴포넌트 */}
+        <VersionLogger />
         <Providers>
           <main className="min-h-dvh max-w-[480px] mx-auto relative overflow-x-hidden">
             {children}

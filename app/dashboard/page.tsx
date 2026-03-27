@@ -162,42 +162,46 @@ export default function DashboardPage() {
     >
       {/* 상단 헤더 */}
       <div
-        className="sticky top-0 z-20 flex items-center gap-3 px-5 py-4 border-b"
-        style={{ backgroundColor: '#0c0c16cc', backdropFilter: 'blur(12px)', borderColor: '#2a2a4a' }}
+        className="sticky top-0 z-20 flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-3 sm:py-4 border-b"
+        style={{ backgroundColor: '#0c0c16ee', backdropFilter: 'blur(12px)', borderColor: '#2a2a4a' }}
       >
-        <button onClick={() => router.push('/')} className="p-2 rounded-xl" style={{ color: '#aaaaaa' }}>
-          <ChevronLeft size={22} />
+        <button onClick={() => router.push('/')} className="p-1.5 sm:p-2 rounded-xl shrink-0" style={{ color: '#aaaaaa' }}>
+          <ChevronLeft size={20} />
         </button>
-        <div className="flex-1">
-          <p className="text-xs font-bold" style={{ color: '#c5a454' }}>
+        
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] sm:text-xs font-bold truncate" style={{ color: '#c5a454' }}>
             MY ART ROUTINE
           </p>
-          <p className="text-[10px]" style={{ color: '#666688' }}>
-             {todayStr} (Day {todayGlobalIndex})
+          <p className="text-[9px] sm:text-[10px] truncate" style={{ color: '#666688' }}>
+             {todayStr} <span className="hidden sm:inline">(Day {todayGlobalIndex})</span>
           </p>
         </div>
         
         {/* 뷰 토글 */}
-        <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: '#3a3a5c' }}>
+        <div className="flex rounded-lg sm:rounded-xl overflow-hidden border shrink-0" style={{ borderColor: '#3a3a5c' }}>
           {(['palette', 'fragment'] as ViewMode[]).map((mode) => (
             <button
               key={mode}
               onClick={() => setViewMode(mode)}
-              className="px-3 py-2 text-xs font-bold transition-all duration-200"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold transition-all duration-200"
               style={{
                 backgroundColor: viewMode === mode ? '#3a3a5c' : '#161630',
                 color: viewMode === mode ? '#c5a454' : '#666688',
               }}
             >
-              {mode === 'palette' ? '🎨 팔레트' : '🖼️ 명화'}
+              <span className="sm:hidden">{mode === 'palette' ? '🎨' : '🖼️'}</span>
+              <span className="hidden sm:inline">{mode === 'palette' ? '🎨 팔레트' : '🖼️ 명화'}</span>
             </button>
           ))}
         </div>
 
-        <AuthButton />
+        <div className="shrink-0">
+          <AuthButton />
+        </div>
 
-        <button onClick={() => router.push('/setup')} className="p-2 rounded-xl" style={{ color: '#aaaaaa' }}>
-          <Settings size={20} />
+        <button onClick={() => router.push('/setup')} className="p-1.5 sm:p-2 rounded-xl shrink-0" style={{ color: '#aaaaaa' }}>
+          <Settings size={18} />
         </button>
       </div>
 
@@ -207,23 +211,23 @@ export default function DashboardPage() {
         {/* ─────────────────────────────────────── */}
         <div className="mt-6 mb-8">
            {/* 사이클 내비게이션 */}
-           <div className="flex items-center justify-between mb-4 bg-[#1a1a35] p-2 rounded-2xl border border-[#3a3a5c]">
+           <div className="flex items-center justify-between mb-4 bg-[#1a1a35] p-1.5 sm:p-2 rounded-2xl border border-[#3a3a5c]">
               <button 
                 onClick={() => setViewCycleIdx(Math.max(0, viewCycleIdx - 1))}
                 disabled={viewCycleIdx === 0}
-                className="p-2 disabled:opacity-30"
+                className="p-1.5 sm:p-2 disabled:opacity-30 shrink-0"
               >
                 <ChevronLeft size={18} />
               </button>
-              <div className="flex-1 text-center flex flex-col items-center justify-center">
-                  <p className="text-[14px] font-serif italic truncate max-w-[220px] font-bold" style={{ color: '#e8e0ff' }}>
+              <div className="flex-1 text-center flex flex-col items-center justify-center min-w-0 px-2">
+                  <p className="text-[12px] sm:text-[14px] font-serif italic truncate max-w-full font-bold" style={{ color: '#e8e0ff' }}>
                     {currentMasterpiece.title}
                   </p>
               </div>
               <button 
                 onClick={() => setViewCycleIdx(viewCycleIdx + 1)}
                 disabled={viewCycleIdx >= currentCycleIdx}
-                className="p-2 disabled:opacity-30"
+                className="p-1.5 sm:p-2 disabled:opacity-30 shrink-0"
               >
                 <ChevronRight size={18} />
               </button>
