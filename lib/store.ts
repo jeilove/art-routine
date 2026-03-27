@@ -47,11 +47,26 @@ export const useStore = create<ArtRoutineState>()(
 
       setSyncing: (val) => set({ isSyncing: val }),
 
-      hydrate: (data) => set({ 
-        habits: data.habits, 
-        dailyData: data.dailyData,
-        startDate: data.startDate
-      }),
+      hydrate: (data: any) => {
+        // 하위 호환성: 만약 dailyData의 값이 배열이면(v0.1.x) 객체 구조(v0.2.x)로 변환
+        const migratedDailyData = { ...data.dailyData };
+        Object.keys(migratedDailyData).forEach(key => {
+          if (Array.isArray(migratedDailyData[key])) {
+            migratedDailyData[key] = {
+              day: 0, 
+              logs: migratedDailyData[key],
+              habitSnapshot: data.habits || []
+            };
+          }
+        });
+
+        set({ 
+          habits: data.habits || get().habits, 
+          dailyData: migratedDailyData,
+          startDate: data.startDate || get().startDate,
+          selectedDay: null // 복구 후 선택일 초기화
+        });
+      },
 
       setHabits: (newHabits) => {
         const { startDate, habits: oldHabits, dailyData } = get();

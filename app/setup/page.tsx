@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Plus, Trash2, Check, Download, FolderOpen } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { Habit, MATISSE_COLORS, InputType } from '@/lib/types';
-import { syncHabits } from '@/lib/actions';
+import { syncHabits, syncFullBackup } from '@/lib/actions';
 import { useSession } from 'next-auth/react';
 
 export default function SetupPage() {
@@ -24,6 +24,7 @@ export default function SetupPage() {
   
   const [habits, setLocalHabits] = useState<Habit[]>(savedHabits);
   const [saved, setSaved] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   const isAdmin = session?.user?.email === 'jeilove17@gmail.com';
 
@@ -65,7 +66,7 @@ export default function SetupPage() {
           habits: savedHabits,
           dailyData,
           startDate,
-          version: 'v0.2.1',
+          version: 'v0.2.3',
           exportedAt: new Date().toISOString(),
         };
         const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
@@ -80,7 +81,7 @@ export default function SetupPage() {
     }
   };
 
-  // 복원하기 (JSON 업로드)
+  // 데이터 불러오기 (JSON 업로드)
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -89,26 +90,41 @@ export default function SetupPage() {
     reader.onload = async (event) => {
       try {
         const json = JSON.parse(event.target?.result as string);
-        if (confirm('데이터를 불러오시겠습니까? 현재 기기의 기록이 교체됩니다.')) {
-          // 1. 스토어 하이드레이션 (객체 복사하여 전달)
-          hydrate({
-            habits: [...(json.habits || [])],
-            dailyData: { ...(json.dailyData || {}) },
-            startDate: json.startDate || null,
-          });
+        if (confirm('데이터를 불러오시겠습니까? 현재 기기의 기록이 모두 교체됩니다.')) {
+          setIsImporting(true);
           
-          // 2. 현재 페이지의 로컬 상태도 즉시 업데이트 (비동기 이슈 방지)
-          setLocalHabits([...(json.habits || [])]);
+          // 1. 스토어 하이드레이션
+          hydrate(json);
           
-          alert('데이터를 성공적으로 불러왔습니다.');
-          router.push('/dashboard');
+          // 2. 로컬 모드일 때도 반영되도록 세팅
+          if (json.habits) {
+            setLocalHabits([...json.habits]);
+          }
+
+          // 3. 로그인 상태라면 서버로도 강제 전송 (중요!)
+          if (session?.user?.id) {
+            await syncFullBackup({
+                habits: json.habits || [],
+                dailyData: json.dailyData || {},
+                startDate: json.startDate || null,
+            });
+          }
+          
+          alert('데이터를 성공적으로 불러왔습니다. 확인을 누르시면 캔버스로 이동합니다.');
+          
+          // 4. 저장소 반영 대기 후 이동
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 400);
         }
       } catch (err) {
         alert('올바르지 않은 백업 파일입니다.');
+      } finally {
+        setIsImporting(false);
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // 파일 선택 초기화 (같은 파일 다시 선택 가능하게)
+    e.target.value = '';
   };
 
   return (
@@ -116,6 +132,16 @@ export default function SetupPage() {
       className="min-h-dvh flex flex-col"
       style={{ backgroundColor: '#0c0c16' }}
     >
+      {/* 로딩 오버레이 */}
+      {isImporting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+           <div className="text-white font-bold flex flex-col items-center gap-4">
+              <div className="w-8 h-8 border-4 border-[#c5a454] border-t-transparent rounded-full animate-spin" />
+              <p>데이터 복원 중...</p>
+           </div>
+        </div>
+      )}
+
       {/* 헤더 */}
       <div
         className="sticky top-0 z-20 flex items-center gap-3 px-5 py-4 border-b"
