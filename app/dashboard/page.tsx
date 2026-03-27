@@ -56,10 +56,15 @@ export default function DashboardPage() {
   const [isGalleryOpen, setIsGalleryOpen] = useState(true);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // 오늘 날짜 문자열 (YYYY-MM-DD)
   const todayStr = new Date().toISOString().split('T')[0];
 
-  // 데이터 무결성을 위해 자동 Mock 생성 제외
+  // 시작일이 없으면 오늘로 자동 지정 (신규 유저 및 초기화 유저용)
+  useEffect(() => {
+    if (!startDate) {
+      // 직접 스토어의 set 메소드를 쓰거나 로직을 위임
+      useStore.setState({ startDate: todayStr });
+    }
+  }, [startDate, todayStr]);
 
   // 오늘이 총 몇 번째 조약인지 (1부터 시작)
   const todayGlobalIndex = useMemo(() => {
