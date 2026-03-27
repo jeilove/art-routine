@@ -1,6 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import { motion } from 'framer-motion';
 import { Palette, Frame, LogIn, LogOut, User } from 'lucide-react';
 import { useStore } from '@/lib/store';
 
@@ -35,7 +38,7 @@ export default function HomePage() {
       <div className="absolute top-6 right-6 z-20">
         {isLoggedIn ? (
           <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#d66d5c] to-[#c5a454] flex items-center justify-center overflow-hidden border border-white/20">
+            <div className="w-6 h-6 rounded-full bg-linear-to-tr from-[#d66d5c] to-[#c5a454] flex items-center justify-center overflow-hidden border border-white/20">
               {session.user?.image ? (
                 <img src={session.user.image} alt="user" className="w-full h-full object-cover" />
               ) : (
