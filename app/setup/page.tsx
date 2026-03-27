@@ -3,16 +3,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Plus, Trash2, Check } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, Check, Download, Upload } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { Habit, MATISSE_COLORS, InputType } from '@/lib/types';
-import { syncHabits } from '@/lib/actions';
+import { syncHabits, syncDailyData } from '@/lib/actions';
+import { useSession } from 'next-auth/react';
 
 export default function SetupPage() {
   const router = useRouter();
-  const { habits: savedHabits, setHabits } = useStore();
+  const { data: session } = useSession();
+  const { habits: savedHabits, setHabits, initMockData, resetData, dailyData, startDate, hydrate } = useStore();
   const [habits, setLocalHabits] = useState<Habit[]>(savedHabits);
   const [saved, setSaved] = useState(false);
+
+  const isAdmin = session?.user?.email === 'jeilove17@gmail.com';
 
   const addHabit = () => {
     if (habits.length >= 8) return;
@@ -43,6 +47,49 @@ export default function SetupPage() {
     
     setSaved(true);
     setTimeout(() => router.push('/dashboard'), 800);
+  };
+
+  // 백업하기 (JSON 다운로드)
+  const handleExport = () => {
+    const backupData = {
+      habits: savedHabits,
+      dailyData,
+      startDate,
+      version: 'v0.2.0',
+      exportedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `art-routine-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // 복원하기 (JSON 업로드)
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        if (confirm('데이터를 복원하시겠습니까? 현재 기록이 모두 교체됩니다.')) {
+          hydrate({
+            habits: json.habits || [],
+            dailyData: json.dailyData || {},
+            startDate: json.startDate || null,
+          });
+          alert('복원이 완료되었습니다.');
+          router.push('/dashboard');
+        }
+      } catch (err) {
+        alert('올바르지 않은 백업 파일입니다.');
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -80,6 +127,23 @@ export default function SetupPage() {
 
       {/* 습관 리스트 */}
       <div className="flex-1 px-5 py-4 overflow-y-auto pb-32">
+        
+        {/* 데이터 백업/복구 섹션 (모든 사용자) */}
+        <div className="mb-6 grid grid-cols-2 gap-3">
+           <button 
+             onClick={handleExport}
+             className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25254a] border border-white/5 text-[11px] font-bold text-white/80"
+           >
+             <Download size={14} className="text-[#c5a454]" />
+             데이터 백업하기
+           </button>
+           <label className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25254a] border border-white/5 text-[11px] font-bold text-white/80 cursor-pointer">
+             <Upload size={14} className="text-[#c5a454]" />
+             기록 복원하기
+             <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+           </label>
+        </div>
+
         <AnimatePresence>
           {habits.map((habit, idx) => (
             <motion.div
@@ -91,7 +155,6 @@ export default function SetupPage() {
               className="mb-3 rounded-2xl p-4 border"
               style={{ backgroundColor: '#1a1a35', borderColor: '#3a3a5c' }}
             >
-              {/* 습관 번호 + 삭제 버튼 */}
               <div className="flex items-center justify-between mb-3">
                 <span
                   className="text-xs font-bold"
@@ -108,7 +171,6 @@ export default function SetupPage() {
                 </button>
               </div>
 
-              {/* 습관명 입력 */}
               <input
                 type="text"
                 value={habit.name}
@@ -122,7 +184,6 @@ export default function SetupPage() {
                 }}
               />
 
-              {/* 기록 방식 토글 */}
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs" style={{ color: '#888888' }}>
                   기록 방식:
@@ -149,7 +210,6 @@ export default function SetupPage() {
                 </div>
               </div>
 
-              {/* 컬러 선택 */}
               <div>
                 <p className="text-xs mb-2" style={{ color: '#888888' }}>
                   고유 컬러:
@@ -183,7 +243,7 @@ export default function SetupPage() {
         {habits.length < 8 && (
           <motion.button
             onClick={addHabit}
-            className="w-full flex items-center justify-center gap-2 rounded-2xl py-4 border border-dashed transition-colors"
+            className="w-full flex items-center justify-center gap-2 rounded-2xl py-4 border border-dashed transition-colors mb-6"
             style={{ borderColor: '#3a3a5c', color: '#666688' }}
             whileHover={{ borderColor: '#f0c040', color: '#f0c040' }}
             whileTap={{ scale: 0.98 }}
@@ -191,6 +251,34 @@ export default function SetupPage() {
             <Plus size={18} />
             <span className="text-sm font-bold">습관 추가</span>
           </motion.button>
+        )}
+
+        {/* 관리자 전용 데이터 관리 버튼 (jeilove17@gmail.com 전용) */}
+        {isAdmin && (
+           <div className="mt-12 flex gap-3 pb-8">
+            <button
+                onClick={() => {
+                if (confirm('모든 기록을 삭제하고 처음부터 시작하시겠습니까?')) {
+                    resetData();
+                    router.push('/');
+                }
+                }}
+                className="flex-1 py-3 rounded-xl border border-red-500/20 text-[10px] font-bold text-red-500/40 hover:bg-red-500/5 transition-all"
+            >
+                전체 초기화 (관리자)
+            </button>
+            <button
+                onClick={() => {
+                if (confirm('샘플 조각들을 채워보시겠습니까? (현재 기록이 덮어씌워질 수 있습니다)')) {
+                    initMockData();
+                    router.push('/dashboard');
+                }
+                }}
+                className="flex-1 py-3 rounded-xl border border-[#c5a454]/10 text-[10px] font-bold text-[#c5a454]/40 hover:bg-[#c5a454]/5 transition-all"
+            >
+                샘플 데이터 로드
+            </button>
+          </div>
         )}
       </div>
 

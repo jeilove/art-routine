@@ -28,6 +28,7 @@ interface ArtRoutineState {
   getDayData: (dateStr: string) => DayData;
   getDayRate: (dateStr: string) => number;
   initMockData: () => void;
+  resetData: () => void;
   // 서버 동기화 관련
   isSyncing: boolean;
   setSyncing: (val: boolean) => void;
@@ -53,7 +54,6 @@ export const useStore = create<ArtRoutineState>()(
       }),
 
       setHabits: (newHabits) => {
-// ... (동일 로직 생략을 위해 실제 수정 시에는 전체 포함)
         const { startDate, habits: oldHabits, dailyData } = get();
         const todayStr = new Date().toISOString().split('T')[0];
         const updatedDailyData = { ...dailyData };
@@ -79,10 +79,8 @@ export const useStore = create<ArtRoutineState>()(
         }
 
         // 2. 중요: 오늘 및 미래의 스냅샷은 제거(Unfreeze)하거나 새로 덮어씌움
-        // 그래야 사용자가 오늘 바꾼 습관 목록이 즉시 오늘 화면에 반영됨
         Object.keys(updatedDailyData).forEach(dateKey => {
             if (dateKey >= todayStr) {
-                // 오늘 이후 데이터가 있으면 스냅샷 제거 (새로운 global habits을 따르도록 함)
                 const existing = updatedDailyData[dateKey];
                 if (existing) {
                     delete existing.habitSnapshot;
@@ -90,7 +88,6 @@ export const useStore = create<ArtRoutineState>()(
             }
         });
 
-        // 3. 루틴 시작일이 아직 없으면 오늘 날짜로 설정
         const newStartDate = startDate || todayStr;
         
         set({ 
@@ -116,7 +113,6 @@ export const useStore = create<ArtRoutineState>()(
             [dateStr]: { 
               ...existing, 
               logs,
-              // 기록 시점의 전체 습관 목록을 스냅샷으로 저장 (나중에 습관이 바뀌어도 이 날의 시각화는 유지)
               habitSnapshot: existing.habitSnapshot || [...habits]
             },
           },
@@ -149,7 +145,6 @@ export const useStore = create<ArtRoutineState>()(
         const data = dailyData[dateStr];
         if (!data) return 0;
         
-        // 해당 날짜의 스냅샷이 있으면 그것을 기준으로, 없으면 현재 습관 목록을 기준으로 계산
         const targetHabits = data.habitSnapshot || habits;
         return calcDayRate(targetHabits, data.logs);
       },
@@ -194,11 +189,20 @@ export const useStore = create<ArtRoutineState>()(
               logs,
               mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
               memo: Math.random() > 0.3 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
-              habitSnapshot: [...habits] // 초기 생성 시점의 습관 목록 박제
+              habitSnapshot: [...habits]
             };
           }
         }
         set({ startDate: start, dailyData: mock });
+      },
+
+      resetData: () => {
+        set({ 
+          startDate: null, 
+          dailyData: {}, 
+          habits: DEFAULT_HABITS,
+          selectedDay: null
+        });
       },
     }),
     {
