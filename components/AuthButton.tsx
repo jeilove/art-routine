@@ -1,34 +1,36 @@
-'use client'
-
 import { signIn, signOut, useSession } from "next-auth/react"
 import { LogIn, LogOut, User } from "lucide-react"
-import Image from "next/image"
 
 export default function AuthButton() {
   const { data: session, status } = useSession();
 
-  if (status === "loading") return <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />;
+  if (status === "loading") return <div className="w-8 h-8 rounded-full bg-white/5 animate-pulse" />;
 
   if (session) {
     return (
-      <div className="flex items-center gap-3 bg-white/5 p-1 pr-3 rounded-full border border-white/10">
-        {session.user?.image ? (
-          <Image src={session.user.image} alt={session.user.name || ""} width={32} height={32} className="rounded-full" />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-[#c5a454] flex items-center justify-center">
-            <User size={16} className="text-white" />
-          </div>
-        )}
-        <div className="flex flex-col">
-            <span className="text-[10px] text-white/50 leading-none">Creator</span>
-            <span className="text-xs font-bold text-white leading-tight">{session.user?.name}</span>
+      <div className="flex items-center gap-2 bg-white/5 p-1 pr-2.5 rounded-full border border-white/10 backdrop-blur-sm">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#d66d5c] to-[#c5a454] flex items-center justify-center overflow-hidden border border-white/20 shrink-0">
+          {session.user?.image ? (
+            <img 
+              src={session.user.image} 
+              alt="" // 웹 접근성을 위해 alt는 남기되 시각적 노출 방지
+              className="w-full h-full object-cover" 
+              onError={(e) => (e.currentTarget.style.display = 'none')} 
+            />
+          ) : (
+            <User size={14} className="text-white" />
+          )}
+        </div>
+        <div className="flex flex-col min-w-0 pr-1">
+            <span className="text-[8px] text-[#c5a454] uppercase font-bold tracking-tighter leading-none mb-0.5">Creator</span>
+            <span className="text-[10px] font-bold text-white/90 leading-tight truncate max-w-[50px]">{session.user?.name}</span>
         </div>
         <button 
           onClick={() => signOut()}
-          className="ml-2 p-1.5 hover:bg-white/10 rounded-full transition-colors"
+          className="p-1 hover:bg-white/10 rounded-full transition-colors shrink-0"
           title="로그아웃"
         >
-          <LogOut size={14} className="text-white/40" />
+          <LogOut size={12} className="text-white/30 hover:text-white/60" />
         </button>
       </div>
     );
@@ -37,10 +39,10 @@ export default function AuthButton() {
   return (
     <button
       onClick={() => signIn("google")}
-      className="flex items-center gap-2 px-4 py-2 bg-[#c5a454] text-white rounded-full text-sm font-bold hover:bg-[#b08d44] transition-all shadow-lg"
+      className="flex items-center gap-2 px-3 py-1.5 bg-white/10 text-white rounded-full text-[11px] font-bold hover:bg-white/20 transition-all border border-white/10 shadow-lg"
     >
-      <LogIn size={16} />
-      <span>Google 로그인</span>
+      <LogIn size={14} />
+      <span>로그인</span>
     </button>
   );
 }
