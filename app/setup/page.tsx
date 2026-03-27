@@ -124,7 +124,7 @@ export default function SetupPage() {
       }
     };
     reader.readAsText(file);
-    e.target.value = '';
+    event.target.value = '';
   };
 
   return (
