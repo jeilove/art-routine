@@ -1,0 +1,80 @@
+﻿
+> art-routine@0.1.0 build E:\諛붿씠釉뚯퐫???꾪듃 ?듦? 猷⑦떞\art-routine
+> next build
+
+   ??Next.js 15.2.4
+
+   Creating an optimized production build ...
+ ??Compiled successfully
+   Linting and checking validity of types ...
+node.exe : 
+위치 C:\Users\ACECOM\AppData\Roaming\npm\pnpm.ps1:24 문자:5
++     & "node$exe"  "$basedir/node_modules/pnpm/bin/pnpm.cjs" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteExcept 
+   ion
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Failed to compile.
+
+./app/dashboard/page.tsx
+6:75  Warning: 'Sparkles' is defined but never used.  @typescript-eslin
+t/no-unused-vars
+53:11  Warning: 'sync' is assigned a value but never used.  @typescript
+-eslint/no-unused-vars
+66:6  Warning: React Hook useEffect has missing dependencies: 'dailyDat
+a', 'initMockData', and 'startDate'. Either include them or remove the 
+dependency array.  react-hooks/exhaustive-deps
+
+./app/layout.tsx
+20:9  Warning: Custom fonts not added in `pages/_document.js` will only
+ load for a single page. This is discouraged. See: https://nextjs.org/d
+ocs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+./app/page.tsx
+18:6  Warning: React Hook useEffect has missing dependencies: 'dailyDat
+a', 'initMockData', and 'startDate'. Either include them or remove the 
+dependency array.  react-hooks/exhaustive-deps
+
+./components/AiDocentCaption.tsx
+4:10  Warning: 'Info' is defined but never used.  @typescript-eslint/no
+-unused-vars
+15:54  Warning: 'habits' is defined but never used.  @typescript-eslint
+/no-unused-vars
+
+./components/canvas/GalleryCanvas.tsx
+163:6  Warning: React Hook useEffect has a missing dependency: 'cycleOf
+fset'. Either include it or remove the dependency array.  react-hooks/e
+xhaustive-deps
+
+./components/DailyNoteEditor.tsx
+4:18  Warning: 'AnimatePresence' is defined but never used.  @typescrip
+t-eslint/no-unused-vars
+30:5  Error: Error: Calling setState synchronously within an effect can
+ trigger cascading renders
+
+Effects are intended to synchronize state between React and external sy
+stems such as manually updating the DOM, state management libraries, or
+ other platform APIs. In general, the body of an effect should do one o
+r both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in 
+a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading r
+enders that can hurt performance, and is not recommended. (https://reac
+t.dev/learn/you-might-not-need-an-effect).
+
+E:\諛붿씠釉뚯퐫???꾪듃 ?듦? 猷⑦떞\art-routine\components\DailyNoteEditor.tsx:30:5
+  28 |   // ?좎쭨媛 諛붾뚯뼱 props媛 蹂寃쎈맆 ??濡쒖뺄 ?곹깭 ?숆린??  29 |   useEffect
+(() => {
+> 30 |     setMemo(initialMemo);
+     |     ^^^^^^^ Avoid calling setState() directly within an effect
+  31 |     setMood(initialMood);
+  32 |     setIsSaved(false);
+  33 |     if (!initialMemo && !initialMood) {  react-hooks/set-state-i
+n-effect
+
+info  - Need to disable some ESLint rules? Learn more here: https://nex
+tjs.org/docs/app/api-reference/config/eslint#disabling-rules
+?덭LIFECYCLE??Command failed with exit code 1.

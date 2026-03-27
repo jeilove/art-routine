@@ -1,21 +1,20 @@
 import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
+import authConfig from "./auth.config"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { db } from "@/lib/db"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
-  providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-  ],
+  session: { strategy: "jwt" }, // 미들웨어 호환을 위해 JWT 전략 고수 (DB 어댑터 사용하더라도 JWT 사용 가능하게)
+  ...authConfig,
   callbacks: {
-    // 세션에 userId를 포함시켜 프론트엔드에서 사용 가능하게 함
-    session({ session, user }) {
-      if (session.user) {
+    ...authConfig.callbacks,
+    async session({ session, user, token }) {
+      // DB 기반 유저 ID 추가 (Adapter 사용 시 유저 객체 활용 가능)
+      if (session.user && user) {
         session.user.id = user.id;
+      } else if (session.user && token.sub) {
+        session.user.id = token.sub;
       }
       return session;
     },

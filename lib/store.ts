@@ -7,30 +7,8 @@ import {
   ViewMode,
   DEFAULT_HABITS,
   calcDayRate,
-  InputType,
 } from './types';
 
-// Mock 데이터 생성 — 현재 월(3월)의 오늘까지 데이터 랜덤 생성
-function generateMockData(habits: Habit[]): Record<string, DayData> {
-  const today = new Date();
-  const todayDay = today.getDate();
-  const data: Record<string, DayData> = {};
-
-  for (let d = 1; d <= todayDay; d++) {
-    const key = String(d);
-    const logs: DailyLog[] = habits.map((h) => {
-      const value =
-        h.inputType === 'binary'
-          ? Math.random() > 0.35
-            ? 100
-            : 0
-          : Math.floor(Math.random() * 101);
-      return { habitId: h.id, value };
-    });
-    data[key] = { day: d, logs };
-  }
-  return data;
-}
 
 interface ArtRoutineState {
   // 설정

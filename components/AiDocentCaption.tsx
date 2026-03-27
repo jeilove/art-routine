@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Info, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useMemo } from 'react';
 import { DayData, Habit } from '@/lib/types';
 
@@ -12,7 +12,7 @@ interface AiDocentCaptionProps {
   cycleIndex: number;     // 현재 몇 번째 사이클인지
 }
 
-export default function AiDocentCaption({ dailyData, habits, routineDates, cycleIndex }: AiDocentCaptionProps) {
+export default function AiDocentCaption({ dailyData, routineDates, cycleIndex }: AiDocentCaptionProps) {
   // 간단한 로컬 분석 로직 (도슨트 톤)
   const analysis = useMemo(() => {
     const dates = routineDates;

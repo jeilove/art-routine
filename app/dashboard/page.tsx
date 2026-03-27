@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Settings, ChevronDown, ChevronUp, Frame, RefreshCw, Sparkles, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Settings, ChevronDown, ChevronUp, Frame, RefreshCw, ChevronRight } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { DayData, ViewMode, MASTERPIECES } from '@/lib/types';
 import PaletteCanvas from '@/components/canvas/PaletteCanvas';
@@ -50,7 +50,7 @@ export default function DashboardPage() {
     initMockData,
   } = useStore();
 
-  const { sync } = useSync(); // 로그인 시 자동 동기화
+  useSync(); // 로그인 시 자동 동기화
 
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(true);
@@ -63,7 +63,7 @@ export default function DashboardPage() {
     if (Object.keys(dailyData).length === 0 && !startDate) {
       initMockData();
     }
-  }, []);
+  }, [dailyData, startDate, initMockData]);
 
   // 오늘이 총 몇 번째 조약인지 (1부터 시작)
   const todayGlobalIndex = useMemo(() => {
@@ -366,6 +366,7 @@ export default function DashboardPage() {
                       />
 
                       <DailyNoteEditor 
+                        key={selectedDay}
                         initialMemo={selectedDayData.memo}
                         initialMood={selectedDayData.mood}
                         onSave={handleNoteUpdate}

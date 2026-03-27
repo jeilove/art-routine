@@ -5,7 +5,6 @@ import {
   timestamp,
   integer,
   jsonb,
-  boolean,
   primaryKey,
   varchar,
 } from 'drizzle-orm/pg-core';

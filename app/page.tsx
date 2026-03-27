@@ -15,7 +15,7 @@ export default function HomePage() {
     if (Object.keys(dailyData).length === 0 && !startDate) {
       initMockData();
     }
-  }, []);
+  }, [dailyData, startDate, initMockData]);
 
   return (
     <div className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden px-6 py-12"

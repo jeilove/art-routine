@@ -89,3 +89,11 @@
 - **Framer Motion 애니메이션**: 아코디언 개폐 시 부드러운 높이 변화 효과 적용
 
 ---
+
+## [v0.1.2] — 2026-03-27
+
+### 🚀 배포 및 안정화 (Deployment Ops)
+- **Auth.js 구조 개편**: Vercel Middleware의 Edge Runtime 호환성을 위해 `auth.config.ts` 분리.
+- **Drizzle DB 연동 안정화**: 미들웨어에서 DB 연결 시 발생하는 Node.js API 에러 해결.
+- **ESLint 빌드 에러 수정**: `useEffect` 내 `setState` 경고 및 미사용 변수(`InputType`, `generateMockData`, `boolean`) 전수 제거.
+- **디버그 시스템 도입**: `debug_history.md`를 통한 체계적인 오류 추적 관리 시작.

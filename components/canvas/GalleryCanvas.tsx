@@ -144,7 +144,7 @@ export default function GalleryCanvas({
       });
 
       // 100% 달성 골드 외곽선
-      const rate = calcDayRate(habits, data.logs);
+      const rate = calcDayRate(targetHabits, data.logs);
       if (rate === 1) {
         ctx.strokeStyle = '#c5a454'; // Muted gold
         ctx.lineWidth = 2;
@@ -160,7 +160,7 @@ export default function GalleryCanvas({
 
       ctx.restore();
     }
-  }, [habits, dailyData, startDateStr, matisseImg]);
+  }, [habits, dailyData, startDateStr, matisseImg, cycleOffset]);
 
   return (
     <canvas

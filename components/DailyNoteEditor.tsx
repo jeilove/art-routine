@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Edit3, Check } from 'lucide-react';
 
 interface DailyNoteEditorProps {
@@ -20,22 +20,10 @@ const MOODS = [
 ];
 
 export default function DailyNoteEditor({ initialMemo = '', initialMood = '', onSave }: DailyNoteEditorProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(!!initialMemo || !!initialMood);
   const [memo, setMemo] = useState(initialMemo);
   const [mood, setMood] = useState(initialMood);
   const [isSaved, setIsSaved] = useState(false);
-
-  // 날짜가 바뀌어 props가 변경될 때 로컬 상태 동기화
-  useEffect(() => {
-    if (memo !== initialMemo) setMemo(initialMemo);
-    if (mood !== initialMood) setMood(initialMood);
-    setIsSaved(false);
-    if (!initialMemo && !initialMood) {
-        setIsOpen(false);
-    } else {
-        setIsOpen(true);
-    }
-  }, [initialMemo, initialMood]);
 
   const handleSave = () => {
     onSave(memo, mood);
