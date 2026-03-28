@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export default function VersionLogger() {
   useEffect(() => {
     console.log(
-      '%c🎨 Art Routine v0.4.0 %c| Hydration Analytics & Sync Stabilization',
+      '%c🎨 Art Routine v0.4.1 %c| Global Hydration & AppInit Fix',
       'color: #c5a454; font-weight: bold; font-size: 1.2em;',
       'color: #888;'
     );

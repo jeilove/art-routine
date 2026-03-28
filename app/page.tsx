@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { motion } from 'framer-motion';
@@ -10,21 +9,10 @@ import { useStore } from '@/lib/store';
 export default function HomePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { dailyData, startDate, initMockData, _hasHydrated } = useStore();
+  const { dailyData, startDate } = useStore();
 
   const isLoading = status === 'loading';
   const isLoggedIn = status === 'authenticated';
-
-  // [v0.4.0] 비로그인 상태에서 데이터 유실 방지 및 자동 생성 로직
-  useEffect(() => {
-    const isGuest = !isLoggedIn && !isLoading;
-    const hasNoData = _hasHydrated && Object.keys(dailyData).length === 0;
-    
-    if (isGuest && hasNoData) {
-      console.log("🎨 [Guest Mode] Hydration complete. No data found. Auto-generating sample data for v0.4.0...");
-      initMockData();
-    }
-  }, [isLoggedIn, isLoading, dailyData, initMockData, _hasHydrated]);
 
   const handleMenuClick = (path: string) => {
     // 비로그인 모드 허용 (단, 데이터 동기화 안됨 메시지 표시 가능)
