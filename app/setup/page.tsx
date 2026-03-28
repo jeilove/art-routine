@@ -76,7 +76,7 @@ export default function SetupPage() {
         a.download = `art-routine-backup-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
-    } catch (e) {
+    } catch {
         alert('백업 생성 중 오류가 발생했습니다.');
     }
   };

@@ -250,7 +250,7 @@ export default function DashboardPage() {
                   ✨ 새로운 30일 루틴 명화가 시작되었습니다!
                 </p>
                 <p className="text-[9px] text-[#888888] mt-1">
-                  이전 작의 캔버스와 기록은 상단 화살표를 눌러 <span className="text-white/60">"이전 루틴"</span>에서 확인하세요.
+                  이전 작의 캔버스와 기록은 상단 화살표를 눌러 <span className="text-white/60">&quot;이전 루틴&quot;</span>에서 확인하세요.
                 </p>
              </motion.div>
            )}

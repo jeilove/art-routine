@@ -122,7 +122,6 @@ export async function fetchUserData() {
         }
     });
 
-    const today = new Date().toISOString().split('T')[0];
 
     return {
         startDate: user?.startDate || null, // DB에 없으면 null을 반환하여 클라이언트 데이터 보존
