@@ -171,12 +171,20 @@ export const useStore = create<ArtRoutineState>()(
       },
 
       initMockData: () => {
-        const { habits } = get();
+        const { habits, startDate } = get();
+        const activeHabits = habits && habits.length > 0 ? habits : DEFAULT_HABITS;
         const today = new Date();
-        const thirtyDaysAgo = new Date(today);
-        thirtyDaysAgo.setDate(today.getDate() - 15);
-        const start = thirtyDaysAgo.toISOString().split('T')[0];
-
+        
+        // 시작일이 있으면 그 날부터, 없으면 15일 전부터 30일간 생성
+        let startObj: Date;
+        if (startDate) {
+          startObj = new Date(startDate);
+        } else {
+          startObj = new Date(today);
+          startObj.setDate(today.getDate() - 15);
+        }
+        
+        const startStr = startObj.toISOString().split('T')[0];
         const mock: Record<string, DayData> = {};
         const moodOptions = ['✨', '😌', '🌧️', '🔥', '💤', '😗'];
         const memoOptions = [
@@ -187,34 +195,34 @@ export const useStore = create<ArtRoutineState>()(
           '명상을 하니 마음이 편안해짐.',
           '보통의 하루, 무난했다.',
           '조금 우울했지만 운동으로 극복!',
-          '내일은 더 나은 하루가 되길.',
+          '오늘의 나 수고했어 :)',
         ];
 
         for (let i = 0; i < 30; i++) {
-          const d = new Date(thirtyDaysAgo);
+          const d = new Date(startObj);
           d.setDate(d.getDate() + i);
           const dateStr = d.toISOString().split('T')[0];
 
           if (d <= today) {
-            const logs: DailyLog[] = habits.map((h) => {
+            const logs: DailyLog[] = activeHabits.map((h) => {
               const value =
                 h.inputType === 'binary'
-                  ? Math.random() > 0.35
+                  ? Math.random() > 0.3
                     ? 100
                     : 0
-                  : Math.floor(Math.random() * 101);
+                  : Math.floor(Math.random() * 80 + 20); // 20~100 사이 랜덤
               return { habitId: h.id, value };
             });
             mock[dateStr] = {
               day: i + 1,
               logs,
               mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
-              memo: Math.random() > 0.3 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
-              habitSnapshot: [...habits]
+              memo: Math.random() > 0.4 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
+              habitSnapshot: [...activeHabits]
             };
           }
         }
-        set({ startDate: start, dailyData: mock });
+        set({ startDate: startStr, dailyData: mock, habits: activeHabits });
       },
 
       resetData: () => {
