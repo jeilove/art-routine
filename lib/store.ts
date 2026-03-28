@@ -33,8 +33,12 @@ interface ArtRoutineState {
   isSyncing: boolean;
   setSyncing: (val: boolean) => void;
   hydrate: (data: { habits: Habit[], dailyData: Record<string, DayData>, startDate: string | null }) => void;
+  
+  // 하이드레이션 상태 체크 (로컬 스토리지 로딩 완료 여부)
+  _hasHydrated: boolean;
+  setHasHydrated: (val: boolean) => void;
 }
-
+ 
 export const useStore = create<ArtRoutineState>()(
   persist(
     (set, get) => ({
@@ -44,7 +48,9 @@ export const useStore = create<ArtRoutineState>()(
       startDate: null,
       dailyData: {},
       isSyncing: false,
+      _hasHydrated: false,
 
+      setHasHydrated: (val) => set({ _hasHydrated: val }),
       setSyncing: (val) => set({ isSyncing: val }),
 
       hydrate: (data: { habits: Habit[], dailyData: Record<string, DayData>, startDate: string | null }) => {
@@ -228,6 +234,11 @@ export const useStore = create<ArtRoutineState>()(
         viewMode: state.viewMode,
         startDate: state.startDate,
       }),
+      onRehydrateStorage: (state) => {
+        return () => {
+          state.setHasHydrated(true);
+        };
+      },
     }
   )
 );
