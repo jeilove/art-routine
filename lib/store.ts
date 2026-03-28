@@ -171,50 +171,39 @@ export const useStore = create<ArtRoutineState>()(
       },
 
       initMockData: () => {
-        const { habits } = get();
-        const activeHabits = habits && habits.length > 0 ? habits : DEFAULT_HABITS;
+        const activeHabits = DEFAULT_HABITS;
         const today = new Date();
-        
-        // 오늘을 기준으로 20일 전부터 시작하여 총 30일간의 데이터를 생성 (현재 시점 기준 꽉 차 보이게)
-        const startObj = new Date(today);
-        startObj.setDate(today.getDate() - 20);
-        
-        const startStr = startObj.toISOString().split('T')[0];
-        const mock: Record<string, DayData> = {};
-        const moodOptions = ['✨', '😌', '🌧️', '🔥', '💤', '😗'];
-        const memoOptions = [
-          '오늘 하루도 뿌듯하게 마무리!',
-          '세련된 루틴으로 기분 좋은 하루.',
-          '야근 후에도 잊지 않고 기록!',
-          '열정이 넘치는 예술적 영감.',
-          '명상을 하니 마음이 편안해짐.',
-          '보통의 하루, 무난했다.',
-          '조금 피곤하지만 성취감 가득!',
-          '내 인생의 명화를 그리는 중 :)',
-        ];
+        today.setHours(0, 0, 0, 0);
 
-        for (let i = 0; i < 30; i++) {
+        // 정확히 31일 전을 시작일로 고정 (한 주기가 꽉 찬 상태로 시작)
+        const startObj = new Date(today);
+        startObj.setDate(today.getDate() - 31);
+        const startStr = startObj.toISOString().split('T')[0];
+
+        const mock: Record<string, DayData> = {};
+        const moodOptions = ['✨', '😌', '🔥', '💤', '😗'];
+        const memoOptions = ['최고의 하루!', '루틴 성공.', '조금 힘들었지만 완료.', '오늘도 성장 중.', '명화 완성 중!'];
+
+        // 31일 전부터 오늘까지 모든 날짜를 채움
+        for (let i = 0; i <= 31; i++) {
           const d = new Date(startObj);
           d.setDate(d.getDate() + i);
           const dateStr = d.toISOString().split('T')[0];
 
-          const logs: DailyLog[] = activeHabits.map((h) => {
-            const value =
-              h.inputType === 'binary'
-                ? Math.random() > 0.3
-                  ? 100
-                  : 0
-                : Math.floor(Math.random() * 60 + 40); // 40~100 사이 랜덤
-            return { habitId: h.id, value };
-          });
-          
-          mock[dateStr] = {
-            day: i + 1,
-            logs,
-            mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
-            memo: Math.random() > 0.5 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
-            habitSnapshot: [...activeHabits]
-          };
+          if (d <= today) {
+            const logs: DailyLog[] = activeHabits.map((h) => ({
+              habitId: h.id,
+              value: Math.random() > 0.2 ? 100 : 0, // 80% 확률로 성공한 것처럼 보이게
+            }));
+            
+            mock[dateStr] = {
+              day: i + 1,
+              logs,
+              mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
+              memo: Math.random() > 0.6 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
+              habitSnapshot: [...activeHabits]
+            };
+          }
         }
         
         set({ startDate: startStr, dailyData: mock, habits: activeHabits });
