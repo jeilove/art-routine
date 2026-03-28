@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export default function VersionLogger() {
   useEffect(() => {
     console.log(
-      '%c🎨 Art Routine v0.4.9 %c| Guest Logic Aggression & Debug',
+      '%c🎨 Art Routine v0.5.0 %c| Full Canvas Seeding Guaranteed',
       'color: #c5a454; font-weight: bold; font-size: 1.2em;',
       'color: #888;'
     );

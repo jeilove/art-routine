@@ -17,15 +17,15 @@ export default function AppInit({ children }: { children: React.ReactNode }) {
     // 1. 하이드레이션(로컬 데이터 로딩) 대기
     if (!_hasHydrated) return;
 
-    // 2. 비로그인 상태이면서 데이터(기록)가 거의 없는 경우 자동 샘플 생성
+    // 2. 비로그인 상태이면서 데이터(기록)가 한 주기(30일)를 채우지 못한 경우 강제 초기화
     const isUnauthenticated = status === 'unauthenticated';
     const isActuallyGuest = isUnauthenticated && !isLoading;
-    const hasInsufficientData = Object.keys(dailyData).length < 10;
+    const hasInsufficientData = Object.keys(dailyData).length < 28;
     
-    console.log(`🔍 [AppInit] status:${status}, dataCount:${Object.keys(dailyData).length}, isGuest:${isActuallyGuest}`);
+    console.log(`🔍 [AppInit v0.5.0] status:${status}, dataCount:${Object.keys(dailyData).length}, isGuest:${isActuallyGuest}`);
 
     if (isActuallyGuest && hasInsufficientData) {
-      console.log("🎨 [Global AppInit] Guest with insufficient data. Force seeding mock for v0.4.9...");
+      console.log("🎨 [Global AppInit] Data incomplete (<28). Force re-seeding full 30 days for v0.5.0...");
       initMockData();
     }
   }, [isLoggedIn, isLoading, dailyData, initMockData, _hasHydrated]);
