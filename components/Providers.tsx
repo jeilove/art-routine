@@ -6,8 +6,9 @@ import AppInit from "./AppInit"
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <AppInit />
-      {children}
+      <AppInit>
+        {children}
+      </AppInit>
     </SessionProvider>
   )
 }
