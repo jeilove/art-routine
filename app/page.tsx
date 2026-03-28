@@ -15,10 +15,13 @@ export default function HomePage() {
   const isLoading = status === 'loading';
   const isLoggedIn = status === 'authenticated';
 
-  // 데이터 무결성을 위해 자동 Mock 생성 (비로그인 상태에서 데이터가 0개일 때만)
+  // [v0.3.2] 비로그인 상태에서 데이터 유실 방지 및 자동 생성 로직
   useEffect(() => {
-    if (!isLoggedIn && !isLoading && Object.keys(dailyData).length === 0) {
-      console.log("[Guest] No data found. Auto-generating sample data for user experience...");
+    const isGuest = !isLoggedIn && !isLoading;
+    const hasNoData = Object.keys(dailyData).length === 0;
+    
+    if (isGuest && hasNoData) {
+      console.log("🎨 [Guest Mode] No log data found. Auto-generating sample data for v0.3.2 experience...");
       initMockData();
     }
   }, [isLoggedIn, isLoading, dailyData, initMockData]);
