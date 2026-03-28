@@ -171,31 +171,26 @@ export const useStore = create<ArtRoutineState>()(
       },
 
       initMockData: () => {
-        const { habits, startDate } = get();
+        const { habits } = get();
         const activeHabits = habits && habits.length > 0 ? habits : DEFAULT_HABITS;
         const today = new Date();
         
-        // 시작일이 있으면 그 날부터, 없으면 15일 전부터 30일간 생성
-        let startObj: Date;
-        if (startDate) {
-          startObj = new Date(startDate);
-        } else {
-          startObj = new Date(today);
-          startObj.setDate(today.getDate() - 15);
-        }
+        // 오늘을 기준으로 20일 전부터 시작하여 총 30일간의 데이터를 생성 (현재 시점 기준 꽉 차 보이게)
+        const startObj = new Date(today);
+        startObj.setDate(today.getDate() - 20);
         
         const startStr = startObj.toISOString().split('T')[0];
         const mock: Record<string, DayData> = {};
         const moodOptions = ['✨', '😌', '🌧️', '🔥', '💤', '😗'];
         const memoOptions = [
           '오늘 하루도 뿌듯하게 마무리!',
-          '비가 와서 차분하게 독서함.',
-          '야근 때문에 너무 피곤하다...',
-          '열정이 넘치는 하루였다.',
+          '세련된 루틴으로 기분 좋은 하루.',
+          '야근 후에도 잊지 않고 기록!',
+          '열정이 넘치는 예술적 영감.',
           '명상을 하니 마음이 편안해짐.',
           '보통의 하루, 무난했다.',
-          '조금 우울했지만 운동으로 극복!',
-          '오늘의 나 수고했어 :)',
+          '조금 피곤하지만 성취감 가득!',
+          '내 인생의 명화를 그리는 중 :)',
         ];
 
         for (let i = 0; i < 30; i++) {
@@ -203,25 +198,25 @@ export const useStore = create<ArtRoutineState>()(
           d.setDate(d.getDate() + i);
           const dateStr = d.toISOString().split('T')[0];
 
-          if (d <= today) {
-            const logs: DailyLog[] = activeHabits.map((h) => {
-              const value =
-                h.inputType === 'binary'
-                  ? Math.random() > 0.3
-                    ? 100
-                    : 0
-                  : Math.floor(Math.random() * 80 + 20); // 20~100 사이 랜덤
-              return { habitId: h.id, value };
-            });
-            mock[dateStr] = {
-              day: i + 1,
-              logs,
-              mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
-              memo: Math.random() > 0.4 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
-              habitSnapshot: [...activeHabits]
-            };
-          }
+          const logs: DailyLog[] = activeHabits.map((h) => {
+            const value =
+              h.inputType === 'binary'
+                ? Math.random() > 0.3
+                  ? 100
+                  : 0
+                : Math.floor(Math.random() * 60 + 40); // 40~100 사이 랜덤
+            return { habitId: h.id, value };
+          });
+          
+          mock[dateStr] = {
+            day: i + 1,
+            logs,
+            mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
+            memo: Math.random() > 0.5 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
+            habitSnapshot: [...activeHabits]
+          };
         }
+        
         set({ startDate: startStr, dailyData: mock, habits: activeHabits });
       },
 
