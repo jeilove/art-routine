@@ -173,48 +173,49 @@ export const useStore = create<ArtRoutineState>()(
       initMockData: () => {
         const activeHabits = DEFAULT_HABITS;
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        
+        // 로컬 날짜 문자열 생성 (YYYY-MM-DD)
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        const d_day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${y}-${m}-${d_day}`;
 
-        // 오늘 날짜를 YYYY-MM-DD 형식의 로컬 문자열로 변환 (UTC 오차 방지)
-        const formatYMD = (date: Date) => {
-          const y = date.getFullYear();
-          const m = String(date.getMonth() + 1).padStart(2, '0');
-          const d = String(date.getDate()).padStart(2, '0');
-          return `${y}-${m}-${d}`;
-        };
-
-        // 정확히 31일 전을 시작일로 고정 (한 주기가 꽉 찬 상태로 시작)
+        // 오늘로부터 정확히 25일 전을 시작일로 강제 고정 (현재 주기가 꽉 차 보이게)
         const startObj = new Date(today);
-        startObj.setDate(today.getDate() - 31);
-        const startStr = formatYMD(startObj);
+        startObj.setDate(today.getDate() - 25);
+        const y_s = startObj.getFullYear();
+        const m_s = String(startObj.getMonth() + 1).padStart(2, '0');
+        const d_s = String(startObj.getDate()).padStart(2, '0');
+        const startStr = `${y_s}-${m_s}-${d_s}`;
 
         const mock: Record<string, DayData> = {};
         const moodOptions = ['✨', '😌', '🔥', '💤', '😗'];
-        const memoOptions = ['최고의 하루!', '루틴 성공.', '조금 힘들었지만 완료.', '오늘도 성장 중.', '명화 완성 중!'];
 
-        // 31일 전부터 오늘까지 모든 날짜를 채움
-        for (let i = 0; i <= 31; i++) {
+        // 루틴 30일치를 무조건 꽉 채움 (복잡한 조건 무시)
+        for (let i = 0; i < 30; i++) {
           const d = new Date(startObj);
-          d.setDate(d.getDate() + i);
-          const dateStr = formatYMD(d);
+          d.setDate(startObj.getDate() + i);
+          const currY = d.getFullYear();
+          const currM = String(d.getMonth() + 1).padStart(2, '0');
+          const currD = String(d.getDate()).padStart(2, '0');
+          const dateStr = `${currY}-${currM}-${currD}`;
 
-          if (d <= today) {
-            const logs: DailyLog[] = activeHabits.map((h) => ({
-              habitId: h.id,
-              value: Math.random() > 0.2 ? 100 : 0,
-            }));
-            
-            mock[dateStr] = {
-              day: i + 1,
-              logs,
-              mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
-              memo: Math.random() > 0.6 ? memoOptions[Math.floor(Math.random() * memoOptions.length)] : '',
-              habitSnapshot: [...activeHabits]
-            };
-          }
+          const logs: DailyLog[] = activeHabits.map((h) => ({
+            habitId: h.id,
+            value: Math.random() > 0.2 ? 100 : 0,
+          }));
+          
+          mock[dateStr] = {
+            day: i + 1,
+            logs,
+            mood: moodOptions[Math.floor(Math.random() * moodOptions.length)],
+            memo: '샘플 데이터입니다.',
+            habitSnapshot: [...activeHabits]
+          };
         }
         
         set({ startDate: startStr, dailyData: mock, habits: activeHabits });
+        console.log("🚀 [Store] Force Seeding Complete for Guest. StartDate:", startStr);
       },
 
       resetData: () => {

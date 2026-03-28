@@ -144,7 +144,12 @@ export default function DashboardPage() {
     for (let i = 0; i < TOTAL_DAYS; i++) {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
-      dates.push(d.toISOString().split('T')[0]);
+      
+      // 로컬 시간 기준으로 YYYY-MM-DD 문자열 생성 (중요: UTC 오차 방지)
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      dates.push(`${y}-${m}-${day}`);
     }
     return dates;
   }, [startDate, viewCycleIdx]);

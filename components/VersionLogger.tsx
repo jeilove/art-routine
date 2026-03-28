@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export default function VersionLogger() {
   useEffect(() => {
     console.log(
-      '%c🎨 Art Routine v0.4.7 %c| Local Date Sync & Dash State Fix',
+      '%c🎨 Art Routine v0.4.8 %c| Time-Zone Match Fixing',
       'color: #c5a454; font-weight: bold; font-size: 1.2em;',
       'color: #888;'
     );

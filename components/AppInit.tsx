@@ -17,12 +17,12 @@ export default function AppInit({ children }: { children: React.ReactNode }) {
     // 1. 하이드레이션(로컬 데이터 로딩) 대기
     if (!_hasHydrated) return;
 
-    // 2. 비로그인 상태이면서 데이터(기록)가 완전히 없는 경우 자동 샘플 생성
+    // 2. 비로그인 상태이면서 데이터(기록)가 거의 없는 경우 자동 샘플 생성
     const isGuest = !isLoggedIn && !isLoading;
-    const hasNoData = Object.keys(dailyData).length === 0;
+    const hasInsufficientData = Object.keys(dailyData).length < 10;
 
-    if (isGuest && hasNoData) {
-      console.log("🎨 [Global AppInit] Guest detected with no data. Generating mock samples for v0.4.4...");
+    if (isGuest && hasInsufficientData) {
+      console.log("🎨 [Global AppInit] Guest with insufficient data. Force seeding mock for v0.4.8...");
       initMockData();
     }
   }, [isLoggedIn, isLoading, dailyData, initMockData, _hasHydrated]);
