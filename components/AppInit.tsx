@@ -3,14 +3,10 @@
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useStore } from '@/lib/store';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
-/**
- * [v0.4.1] 앱 전역 초기화 컴포넌트
- * 비로그인(Guest) 사용자가 진입했을 때, 데이터가 아예 없는 경우 
- * 샘플 데이터를 자동으로 생성하여 서비스 컨셉을 한눈에 볼 수 있게 함.
- * Zustand 하이드레이션 완료 후에만 작동함.
- */
-export default function AppInit() {
+export default function AppInit({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
   const { dailyData, initMockData, _hasHydrated } = useStore();
 
@@ -21,15 +17,33 @@ export default function AppInit() {
     // 1. 하이드레이션(로컬 데이터 로딩) 대기
     if (!_hasHydrated) return;
 
-    // 2. 비로그인 상태이면서 데이터(기록)가 완전이 없는 경우
+    // 2. 비로그인 상태이면서 데이터(기록)가 완전히 없는 경우 자동 샘플 생성
     const isGuest = !isLoggedIn && !isLoading;
     const hasNoData = Object.keys(dailyData).length === 0;
 
     if (isGuest && hasNoData) {
-      console.log("🎨 [Global AppInit] Guest detected with no data. Generating mock samples...");
+      console.log("🎨 [Global AppInit] Guest detected with no data. Generating mock samples for v0.4.4...");
       initMockData();
     }
   }, [isLoggedIn, isLoading, dailyData, initMockData, _hasHydrated]);
 
-  return null; // UI는 렌더링하지 않음
+  // 로컬 스토리지 데이터 로딩 전에는 화려한 로딩 화면 노출 (데이터 유실 오인 방지)
+  if (!_hasHydrated) {
+    return (
+      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0c0c16]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center"
+        >
+          <Loader2 className="w-10 h-10 text-[#c5a454] animate-spin mb-4" />
+          <p className="text-[#8888aa] text-sm font-light tracking-widest animate-pulse">
+            ART ROUTINE 로딩 중...
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return <>{children}</>; 
 }
