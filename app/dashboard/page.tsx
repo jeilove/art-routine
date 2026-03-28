@@ -82,6 +82,11 @@ export default function DashboardPage() {
   // 현재 보고 있는 사이클 상태
   const [viewCycleIdx, setViewCycleIdx] = useState(currentCycleIdx);
 
+  // [v0.4.7] 하이드레이션 등으로 실시간 데이터(시작일)가 앱 최상단에서 변경될 경우, 대시보드의 주기도 즉시 동기화
+  useEffect(() => {
+    setViewCycleIdx(currentCycleIdx);
+  }, [currentCycleIdx]);
+
   // 현재 사이클의 명화 정보
   const currentMasterpiece = MASTERPIECES[viewCycleIdx % MASTERPIECES.length];
   const masterpieceImg = useMasterpieceImage(currentMasterpiece.image);

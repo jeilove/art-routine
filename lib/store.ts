@@ -175,10 +175,18 @@ export const useStore = create<ArtRoutineState>()(
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
+        // 오늘 날짜를 YYYY-MM-DD 형식의 로컬 문자열로 변환 (UTC 오차 방지)
+        const formatYMD = (date: Date) => {
+          const y = date.getFullYear();
+          const m = String(date.getMonth() + 1).padStart(2, '0');
+          const d = String(date.getDate()).padStart(2, '0');
+          return `${y}-${m}-${d}`;
+        };
+
         // 정확히 31일 전을 시작일로 고정 (한 주기가 꽉 찬 상태로 시작)
         const startObj = new Date(today);
         startObj.setDate(today.getDate() - 31);
-        const startStr = startObj.toISOString().split('T')[0];
+        const startStr = formatYMD(startObj);
 
         const mock: Record<string, DayData> = {};
         const moodOptions = ['✨', '😌', '🔥', '💤', '😗'];
@@ -188,12 +196,12 @@ export const useStore = create<ArtRoutineState>()(
         for (let i = 0; i <= 31; i++) {
           const d = new Date(startObj);
           d.setDate(d.getDate() + i);
-          const dateStr = d.toISOString().split('T')[0];
+          const dateStr = formatYMD(d);
 
           if (d <= today) {
             const logs: DailyLog[] = activeHabits.map((h) => ({
               habitId: h.id,
-              value: Math.random() > 0.2 ? 100 : 0, // 80% 확률로 성공한 것처럼 보이게
+              value: Math.random() > 0.2 ? 100 : 0,
             }));
             
             mock[dateStr] = {

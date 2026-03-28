@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export default function VersionLogger() {
   useEffect(() => {
     console.log(
-      '%c🎨 Art Routine v0.4.6 %c| Absolute Initial Mock Seeding',
+      '%c🎨 Art Routine v0.4.7 %c| Local Date Sync & Dash State Fix',
       'color: #c5a454; font-weight: bold; font-size: 1.2em;',
       'color: #888;'
     );
